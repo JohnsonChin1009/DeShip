@@ -76,8 +76,6 @@ export interface Company {
     totalSlots?: number;
   }
   
-  export interface ScholarshipFormData extends Omit<Scholarship, 'id' | 'companyId' | 'contractAddress' | 'status' | 'applicants' | 'createdAt' | 'updatedAt'> {}
-  
   export type Industry = 
     | 'Blockchain'
     | 'DeFi'
