@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Footer from "@/components/custom/footer";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         className={`${jetBrainsMono.className} antialiased`}
       >
         {children}
+        <Footer />
       </body>
     </html>
   );
