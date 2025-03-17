@@ -1,0 +1,11 @@
+{
+  "name": "Company Role NFT",
+  "description": "This NFT represents a Company in DeShip.",
+  "image": "ipfs://bafkreialbyjuyfezwk7txbdikx6rah3lcxajgjbpf3t3uw4ujb4w34mfo4",
+  "attributes": [
+    {
+      "trait_type": "Role",
+      "value": "Company"
+    }
+  ]
+}

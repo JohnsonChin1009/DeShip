@@ -1,0 +1,9 @@
+{
+    "name": "Student Role NFT",
+    "description": "This NFT represents a Student in DeShip.",
+    "image": "ipfs://bafkreih7uxc54eymr7uh43myghght2lcwjwbvycj2jgt4o4fjd7q2yls64",
+    "attributes": [
+      { "trait_type": "Role", "value": "Student" }
+    ]
+}
+  
