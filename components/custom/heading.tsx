@@ -2,6 +2,7 @@
 
 import { LuMenu } from "react-icons/lu";
 import { useEffect, useState, useRef } from "react";
+import PrivyButton from "@/components/custom/privy-button";
 import Link from "next/link";
 
 export default function Heading() {
@@ -59,6 +60,11 @@ export default function Heading() {
                         <Link key={link.id} href={link.href} onClick={handleLinkClick} className="hover:font-bold hover:text-[#b8c1ec]">{link.name}</Link>
                     ))}
                 </nav>
+
+                {/* Privy Button */}
+                <div>
+                    <PrivyButton />
+                </div>
 
             </div>
         </>

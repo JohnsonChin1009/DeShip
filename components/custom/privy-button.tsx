@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ethers } from "ethers";
-import { roleNFT_CA, roleNFT_ABI } from "@/lib/roleNFT";
+import { roleNFT_CA, roleNFT_ABI } from "@/lib/contractABI";
 import { useRouter } from "next/navigation";
 
 export default function PrivyButton() {

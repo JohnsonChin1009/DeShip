@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ethers } from "ethers";
-import { roleNFT_CA, roleNFT_ABI } from "@/lib/roleNFT";
+import { roleNFT_CA, roleNFT_ABI } from "@/lib/contractABI";
 
 export async function POST(request: NextRequest) {
     try {

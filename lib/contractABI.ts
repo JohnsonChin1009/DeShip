@@ -1,3 +1,4 @@
+// Variables for Role NFT Contract
 const roleNFT_CA = "0x3E16F77f78939AC48bE10112383d376D425F768D"
 const roleNFT_ABI = [
   {
@@ -727,5 +728,7 @@ const roleNFT_ABI = [
     "type": "function"
   }
 ];
+
+
 
 export { roleNFT_CA, roleNFT_ABI };

@@ -7,7 +7,7 @@ import { FaGithub } from "react-icons/fa6";
 export default function Footer() {
     return (
         <>
-            <footer className="py-4 flex justify-between px-4 md:px-8 lg:px-16 lg:py-8 items-center text-center text-highlight">
+            <footer className="py-4 flex bg-[#232946] justify-between px-4 md:px-8 lg:px-16 lg:py-8 items-center text-center text-highlight">
                 {/* deShip Logo */}
                 <Link href="/" className="font-black text-lg">
                     deShip

@@ -18,7 +18,7 @@ export default function RoleCard({ role, image, description, onSelectRole }: Rol
                  shadow-sm hover:shadow-lg transition-shadow space-y-2 cursor-pointer"
     >
       <div className="relative w-20 h-20 mx-auto">
-        <Image src={image} alt={role} fill className="object-contain" />
+        <Image src={image} alt={role} fill className="object-contain rounded-lg" />
       </div>
       <h3 className="text-xl lg:text-2xl text-black font-bold">{role}</h3>
       <p className="text-gray-600 font-medium text-sm max-w-xs">{description}</p>

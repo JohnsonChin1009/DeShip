@@ -2,7 +2,6 @@
 
 import RoleCard from "@/components/custom/role-card";
 import PrivyButton from "@/components/custom/privy-button";
-import Image from "next/image";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 
@@ -13,12 +12,13 @@ export default function SignUpPage() {
 
     useEffect(() => {
         console.log("User address:", walletAddress);
-    }, [walletAddress]);
+        console.log("Selected role:", selectedRole); // TO REMOVE;
+    }, [walletAddress, selectedRole]);
 
     const handleRoleSelect = async (role: string) => {
         console.log("Selected role:", role);
         setSelectedRole(role);
-
+    
         // Ensure we only call the API when both walletAddress and selectedRole exist
         if (!walletAddress) {
             console.error("Wallet address is missing. Cannot mint NFT.");
@@ -52,21 +52,7 @@ export default function SignUpPage() {
                 <div className="absolute top-6 right-6">
                     <PrivyButton />
                 </div>
-
-                {/* Decoration Elements */}
-                <div className="flex space-x-4">
-                    {decoElements.map((item) => (
-                        <div key={item.id} className="relative w-20 h-20">
-                            <Image
-                                src={item.image}
-                                alt={item.title}
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
-                    ))}
-                </div>
-
+                
                 {/* Page Content */}
                 <div className="flex flex-col space-y-3">
                     <h1 className="text-3xl font-black text-black">Greetings!</h1>
@@ -76,13 +62,13 @@ export default function SignUpPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mx-auto">
                     <RoleCard
                         role="Student"
-                        image="/placeholder.png"
+                        image="/student.png"
                         description="Looking for opportunities? Create an account and start applying for scholarships with equal opportunities."
                         onSelectRole={handleRoleSelect}
                     />
                     <RoleCard
                         role="Company"
-                        image="/placeholder.png"
+                        image="/company.png"
                         description="Ready to play a part in shaping the future? Invest in the next generation of talent and pay it forward."
                         onSelectRole={handleRoleSelect}
                     />
@@ -91,9 +77,3 @@ export default function SignUpPage() {
         </>
     );
 }
-
-const decoElements = [
-    { id: 1, title: "Element 1", image: "/placeholder.png" },
-    { id: 2, title: "Element 2", image: "/placeholder.png" },
-    { id: 3, title: "Element 3", image: "/placeholder.png" },
-];
