@@ -1,18 +1,48 @@
 "use client";
 
-import PrivyButton from "@/components/custom/privy-button";
+import { useState, useEffect } from "react";
 export default function DashboardPage() {
+    const [role, setRole ] = useState<string>("");
 
-    
+    useEffect(() => {
+        const userRole = localStorage.getItem("userRole");
+
+        if (!userRole) {
+            return; 
+        }
+
+        setRole(userRole);
+    }, [])
+
     return (
         <>
             <main className="min-h-screen flex bg-">
-                <div className="max-w-[30%]">
-                </div>
+                { role === "Student" ? <StudentDashboard/> :
+                role === "Company" ? <CompanyDashboard/> :
                 <div>
-                    <PrivyButton />
-                </div>
+                    Loading {/* Will replace with Loading Skeleton */}
+                </div>}
             </main>
         </> 
+    )
+}
+
+const StudentDashboard = () => {
+    return (
+        <>
+            <main className="bg-[#F0EBE3] min-w-full">
+                Student Dashboard
+            </main>
+        </>
+    )
+}
+
+const CompanyDashboard = () => {
+    return (
+        <>
+            <div>
+                Company Dashboard
+            </div>
+        </>
     )
 }
