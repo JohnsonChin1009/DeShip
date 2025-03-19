@@ -55,21 +55,48 @@ export default function PrivyButton() {
 
     // Handle routing based on user role - use ref to prevent multiple redirects
     useEffect(() => {
-        if (!authenticated) {
-            hasRedirected.current = false;
-            router.replace("/");
-            return;
-        }
+        async function handleRedirect() {
+            console.log("✅ Authenticated:", authenticated);
+            console.log("⏳ Checking role:", isCheckingRole);
+            console.log("🎭 User has NFT:", hasUserRole);
 
-        if (!isCheckingRole && hasUserRole !== undefined && !hasRedirected.current) {
-            hasRedirected.current = true;
-            if (hasUserRole) {
-                router.replace("/dashboard");
-            } else {
-                router.replace("/sign-up");
+            if (!authenticated) {
+                console.log("🔄 Redirecting to /");
+                hasRedirected.current = false;
+                router.replace("/");
+                return;
+            }
+
+            // Only redirect when role checking is finished and hasUserRole is defined
+            if (!isCheckingRole && hasUserRole !== undefined && !hasRedirected.current) {
+                hasRedirected.current = true;
+                const userAddress = user?.wallet?.address;
+                if (hasUserRole) {
+                    try {
+                        const userRole = await contract.getUserRole(userAddress);
+
+                        if (userRole === "Student") { // Redirect to Student dashboard
+                            console.log("✅ Redirecting to Student dashboard...");
+                            router.replace("/dashboard");
+
+                        } else if (userRole === "Company") { // Redirect to Company dashboard
+                            console.log("✅ Redirecting to Company dashboard...");
+                            router.replace("/company/dashboard");
+
+                        }
+                    } catch (error) {
+                        console.error("❌ Error fetching user role:", error);
+                        router.replace("/sign-up");
+                    }
+                } else {
+                    console.log("❌ Redirecting to sign-up...");
+                    router.replace("/sign-up");
+                }
             }
         }
-    }, [authenticated, hasUserRole, isCheckingRole, router]);
+
+        handleRedirect();
+    }, [authenticated, hasUserRole, isCheckingRole, router, user, contract]);
 
     if (!ready) {
         return <button disabled className="primary-button">Loading...</button>;
