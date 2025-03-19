@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileInput } from '@/components/ui/file-input';
 import { MilestoneInput, type Milestone } from '@/components/ui/milestone-input';
-import { Sidebar } from '@/components/ui/sidebar';
+import { Sidebar } from '@/components/custom/sidebar';
 import { Header } from '@/components/ui/header';
 
 // Define field of study options as a constant array

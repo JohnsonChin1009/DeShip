@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Sidebar } from "@/components/ui/sidebar";
+import { Sidebar } from "@/components/custom/sidebar";
 import { Header } from "@/components/ui/header";
 import { Eye, Search } from "lucide-react";
 import { mockScholarships } from "@/lib/mockData";

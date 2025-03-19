@@ -15,11 +15,11 @@ import {
   YAxis
 } from 'recharts';
 
-import { Avatar, AvatarFallback} from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Sidebar } from '@/components/ui/sidebar';
+import { Sidebar } from '@/components/custom/sidebar';
 import { Header } from '@/components/ui/header';
 import { mockCompanies, mockScholars, mockTransactions } from '@/lib/mockData';
 import PrivyButton from '@/components/custom/privy-button';
@@ -42,10 +42,10 @@ export default function CompanyDashboard() {
       {/* Main Content */}
       <main className={`${sidebarOpen ? 'ml-64' : 'ml-0'} min-h-screen bg-background transition-all`}>
         {/* Header */}
-        <Header 
-          title="Dashboard" 
-          showCreateButton={true} 
-          createButtonLink="/company/create-scholarship" 
+        <Header
+          title="Dashboard"
+          showCreateButton={true}
+          createButtonLink="/company/create-scholarship"
           createButtonText="Create Scholarship"
           sidebarOpen={sidebarOpen}
           toggleSidebar={toggleSidebar}
