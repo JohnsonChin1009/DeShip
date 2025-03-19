@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 
 export default function PrivyButton() {
     const { ready, authenticated, login, logout, user } = usePrivy();
-    const [hasUserRole, setHasUserRole] = useState<undefined | boolean>(undefined);
-    const [isCheckingRole, setIsCheckingRole] = useState(false);
+    const [ hasUserRole, setHasUserRole ] = useState<undefined | boolean>(undefined);
+    const [ isCheckingRole, setIsCheckingRole ] = useState(false);
+    const [ dropdownOpen, setDropdownOpen ] = useState(false);
     const router = useRouter();
     const hasRedirected = useRef(false);
     
@@ -26,7 +27,18 @@ export default function PrivyButton() {
                 setIsCheckingRole(true);
                 try {
                     const result = await contract.hasRoleNFT(user.wallet.address);
-                    console.log("🔍 Contract response:", result);
+
+                    if (!result) {
+                        console.error("User does not have role NFT");
+                    }
+
+                    const role = await contract.getUserRole(user.wallet.address);
+
+                    if (!role) {
+                        console.error("Error fetching user role from contract");
+                    }
+                    
+                    localStorage.setItem("userRole", role);
                     setHasUserRole(result);
                 } catch (error) {
                     console.error("❌ Error checking role NFT:", error);
@@ -43,25 +55,17 @@ export default function PrivyButton() {
 
     // Handle routing based on user role - use ref to prevent multiple redirects
     useEffect(() => {
-        console.log("✅ Authenticated:", authenticated);
-        console.log("⏳ Checking role:", isCheckingRole);
-        console.log("🎭 User has NFT:", hasUserRole);
-
         if (!authenticated) {
-            console.log("🔄 Redirecting to /");
             hasRedirected.current = false;
             router.replace("/");
             return;
         }
 
-        // Only redirect when role checking is finished and hasUserRole is defined
         if (!isCheckingRole && hasUserRole !== undefined && !hasRedirected.current) {
             hasRedirected.current = true;
             if (hasUserRole) {
-                console.log("✅ Redirecting to dashboard...");
                 router.replace("/dashboard");
             } else {
-                console.log("❌ Redirecting to sign-up...");
                 router.replace("/sign-up");
             }
         }
@@ -72,17 +76,27 @@ export default function PrivyButton() {
     }
 
     return authenticated ? (
-        <div>
+        <div className="relative inline-block">
             <button
-                onClick={logout}
+                onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="primary-button"
             >
                 {isCheckingRole
                     ? "Checking Role..."
                     : user?.wallet?.address
                     ? `${user.wallet.address.slice(0, 6)}...${user.wallet.address.slice(-4)}`
-                    : "Disconnect"}
+                    : "Menu"}
             </button>
+            {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
+                    <button
+                        onClick={logout}
+                        className="block w-full px-4 py-2 text-left hover:bg-gray-200"
+                    >
+                        Disconnect
+                    </button>
+                </div>
+            )}
         </div>
     ) : (
         <button onClick={login} className="primary-button">

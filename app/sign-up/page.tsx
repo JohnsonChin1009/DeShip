@@ -45,6 +45,7 @@ export default function SignUpPage() {
         }
     };
 
+
     return (
         <>
             <main className="relative min-h-screen flex flex-col space-y-10 items-center justify-center text-center bg-[#F0EBE3] px-4 md:px-8 lg:px-16 py-10">
