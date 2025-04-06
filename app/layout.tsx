@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Footer from "@/components/custom/footer";
 import { JetBrains_Mono } from "next/font/google";
 import Providers from "./providers";
 import "./globals.css";
@@ -27,7 +26,6 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
-        <Footer />
       </body>
     </html>
   );

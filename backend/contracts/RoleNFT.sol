@@ -15,45 +15,42 @@ contract RoleNFT is ERC721, ERC721URIStorage, Ownable {
     uint8 public studentSupply;
     uint8 public companySupply;
 
-    mapping(uint256 => bool) public isCompanyRole;
     mapping(address => bool) public hasRoleNFT; // Track if a user already has an NFT
     mapping(address => uint256) public userTokenId; // Store user's token ID
 
     constructor(address initialOwner) ERC721("RoleNFT", "ROLE") Ownable(initialOwner) {}
 
-function safeMintStudent(address to, string memory metadataCID) public onlyOwner returns (uint256) {
-    require(studentSupply < MAX_STUDENT_SUPPLY, "Student supply limit reached");
-    require(!hasRoleNFT[to], "User already owns a RoleNFT");
+    function safeMintStudent(address to, string memory metadataCID) public onlyOwner returns (uint256) {
+        require(studentSupply < MAX_STUDENT_SUPPLY, "Student supply limit reached");
+        require(!hasRoleNFT[to], "User already owns a RoleNFT");
 
-    uint256 tokenId = _nextTokenId;
-    _safeMint(to, tokenId);
-    _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID))); // Store full IPFS URI
+        uint256 tokenId = _nextTokenId;
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID))); // Store full IPFS URI
 
-    studentSupply++;
-    isCompanyRole[tokenId] = false;
-    hasRoleNFT[to] = true;
-    userTokenId[to] = tokenId;
-    _nextTokenId++;
+        studentSupply++;
+        hasRoleNFT[to] = true;
+        userTokenId[to] = tokenId;
+        _nextTokenId++;
 
-    return tokenId;
-}
+        return tokenId;
+    }
 
-function safeMintCompany(address to, string memory metadataCID) public onlyOwner returns (uint256) {
-    require(companySupply < MAX_COMPANY_SUPPLY, "Company supply limit reached");
-    require(!hasRoleNFT[to], "User already owns a RoleNFT");
+    function safeMintCompany(address to, string memory metadataCID) public onlyOwner returns (uint256) {
+        require(companySupply < MAX_COMPANY_SUPPLY, "Company supply limit reached");
+        require(!hasRoleNFT[to], "User already owns a RoleNFT");
 
-    uint256 tokenId = _nextTokenId;
-    _safeMint(to, tokenId);
-    _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID))); // Store full IPFS URI
+        uint256 tokenId = _nextTokenId;
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID))); // Store full IPFS URI
 
-    companySupply++;
-    isCompanyRole[tokenId] = true;
-    hasRoleNFT[to] = true;
-    userTokenId[to] = tokenId;
-    _nextTokenId++;
+        companySupply++;
+        hasRoleNFT[to] = true;
+        userTokenId[to] = tokenId;
+        _nextTokenId++;
 
-    return tokenId;
-}
+        return tokenId;
+    }
 
     function getUserRole(address user) public view returns (string memory) {
         if (!hasRoleNFT[user]) {

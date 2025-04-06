@@ -731,4 +731,5 @@ const roleNFT_ABI = [
 
 
 
+
 export { roleNFT_CA, roleNFT_ABI };

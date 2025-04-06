@@ -99,7 +99,7 @@ export default function PrivyButton() {
             )}
         </div>
     ) : (
-        <button onClick={login} className="primary-button">
+        <button onClick={login} className="landing-button">
             Connect Wallet
         </button>
     );

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import PrivyButton from "@/components/custom/privy-button";
+
 export default function DashboardPage() {
     const [role, setRole ] = useState<string>("");
 
@@ -32,6 +34,7 @@ const StudentDashboard = () => {
         <>
             <main className="bg-[#F0EBE3] min-w-full">
                 Student Dashboard
+                <PrivyButton />
             </main>
         </>
     )

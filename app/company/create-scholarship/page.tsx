@@ -16,7 +16,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { FileInput } from '@/components/ui/file-input';
 import { MilestoneInput, type Milestone } from '@/components/ui/milestone-input';
 import { Sidebar } from '@/components/custom/sidebar';
-import { Header } from '@/components/ui/header';
+import { Header } from '@/components/custom/header';
 
 // Define field of study options as a constant array
 const FIELDS_OF_STUDY = [

@@ -17,16 +17,6 @@ html {
   scroll-behavior: smooth;
 }
 
-.word-block {
-  display: inline-block;
-  font-weight: 900;
-  border-color: var(--stroke);
-  border-width: 2px;
-  border-radius: 1rem;
-  transition-timing-function: ease-in-out;
-  transition-duration: 300ms;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -140,7 +130,7 @@ body:has(#hero .text-highlight) {
   color: var(--foreground-landing);
 }
 
-.primary-button {
+.landing-button {
   border-width: 2px;
   border-style: solid;
   border-color: var(--highlight);
@@ -150,9 +140,20 @@ body:has(#hero .text-highlight) {
   transition: all 300ms ease-in-out;
 }
 
-.primary-button:hover {
+.landing-button:hover {
   color: var(--stroke);
   background-color: var(--highlight);
   border-color: var(--stroke);
   font-weight: 900;
+}
+
+
+.word-block {
+  display: inline-block;
+  font-weight: 900;
+  border-color: var(--stroke);
+  border-width: 2px;
+  border-radius: 1rem;
+  transition-timing-function: ease-in-out;
+  transition-duration: 300ms;
 }

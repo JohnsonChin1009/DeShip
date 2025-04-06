@@ -11,7 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Sidebar } from "@/components/custom/sidebar";
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/custom/header";
 import { Eye, Search } from "lucide-react";
 import { mockScholarships } from "@/lib/mockData";
 

@@ -20,9 +20,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Sidebar } from '@/components/custom/sidebar';
-import { Header } from '@/components/ui/header';
+import { Header } from '@/components/custom/header';
 import { mockCompanies, mockScholars, mockTransactions } from '@/lib/mockData';
-import PrivyButton from '@/components/custom/privy-button';
 
 const company = mockCompanies[0];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -53,7 +52,7 @@ export default function CompanyDashboard() {
 
         {/* Dashboard Content */}
         <div className="p-6 space-y-6">
-          <PrivyButton />
+          {/* <PrivyButton /> */}
           {/* Metrics */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card>
