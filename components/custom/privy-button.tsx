@@ -9,10 +9,10 @@ import { useRouter } from "next/navigation";
 export default function PrivyButton() {
     const { ready, authenticated, login, logout, user } = usePrivy();
     const [ hasUserRole, setHasUserRole ] = useState<undefined | boolean>(undefined);
-    const [ isCheckingRole, setIsCheckingRole ] = useState(false);
     const [ dropdownOpen, setDropdownOpen ] = useState(false);
     const router = useRouter();
     const hasRedirected = useRef(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
     
     // Create contract instance only once using useMemo
     const contract = useMemo(() => {
@@ -24,12 +24,11 @@ export default function PrivyButton() {
     useEffect(() => {
         async function checkUserRole() {
             if (authenticated && user?.wallet?.address) {
-                setIsCheckingRole(true);
                 try {
                     const result = await contract.hasRoleNFT(user.wallet.address);
 
                     if (!result) {
-                        console.error("User does not have role NFT");
+                        console.log("User does not have role NFT");
                     }
 
                     const role = await contract.getUserRole(user.wallet.address);
@@ -42,8 +41,6 @@ export default function PrivyButton() {
                     setHasUserRole(result);
                 } catch (error) {
                     console.error("❌ Error checking role NFT:", error);
-                } finally {
-                    setIsCheckingRole(false);
                 }
             }
         }
@@ -61,7 +58,7 @@ export default function PrivyButton() {
             return;
         }
 
-        if (!isCheckingRole && hasUserRole !== undefined && !hasRedirected.current) {
+        if (hasUserRole !== undefined && !hasRedirected.current) {
             hasRedirected.current = true;
             if (hasUserRole) {
                 router.replace("/dashboard");
@@ -69,29 +66,42 @@ export default function PrivyButton() {
                 router.replace("/sign-up");
             }
         }
-    }, [authenticated, hasUserRole, isCheckingRole, router]);
+    }, [authenticated, hasUserRole, router]);
+
+    // Function to close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(false);
+            }
+        }
+        
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     if (!ready) {
         return <button disabled className="primary-button">Loading...</button>;
     }
 
     return authenticated ? (
-        <div className="relative inline-block">
+        <div className="relative inline-block" ref={dropdownRef}>
             <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="primary-button"
+                className="border-2 border-gray-300 hover:border-2 px-4 py-2 text-[13px] flex items-center justify-center gap-2 rounded-xl  hover:border-[#1C1C1C]"
             >
-                {isCheckingRole
-                    ? "Checking Role..."
-                    : user?.wallet?.address
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                {user?.wallet?.address
                     ? `${user.wallet.address.slice(0, 6)}...${user.wallet.address.slice(-4)}`
                     : "Menu"}
             </button>
             {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
+                <div className="absolute left-0 mt-2 w-48 bg-transparent border border-gray-300 rounded-xl shadow-lg z-50">
                     <button
                         onClick={logout}
-                        className="block w-full px-4 py-2 text-left hover:bg-gray-200"
+                        className="block w-full px-3 py-2 text-center hover:font-medium"
                     >
                         Disconnect
                     </button>

@@ -1,3 +1,5 @@
+import { StringValidation } from "zod";
+
 export interface Company {
     id: string;
     name: string;
@@ -11,8 +13,8 @@ export interface Company {
     contractAddress: string;
     metrics?: CompanyMetrics;
   }
-  
-  export interface CompanyMetrics {
+
+export interface CompanyMetrics {
     totalScholars: number;
     activeScholars: number;
     totalFundsAllocated: number;
@@ -23,7 +25,7 @@ export interface Company {
     geographicDistribution: GeographicDistribution[];
   }
   
-  export interface ScholarPerformance {
+export interface ScholarPerformance {
     id: string;
     name: string;
     program: string;
@@ -37,20 +39,20 @@ export interface Company {
     };
   }
   
-  export interface FundingHistory {
+export interface FundingHistory {
     date: string;
     amount: number;
     type: 'Allocation' | 'Return';
     program: string;
-  }
+}
   
-  export interface GeographicDistribution {
+export interface GeographicDistribution {
     region: string;
     scholars: number;
     funding: number;
-  }
+}
   
-  export interface Scholarship {
+export interface Scholarship {
     id: number;
     companyId: string;
     title: string;
@@ -65,7 +67,7 @@ export interface Company {
       skills: string[];
       location: string;
       additionalRequirements: string;
-    };
+};
     status: 'Active' | 'Closed' | 'Draft';
     applicants: number;
     contractAddress: string;
@@ -74,7 +76,7 @@ export interface Company {
     progress?: number;
     selectedScholars?: number;
     totalSlots?: number;
-  }
+}
   
   export type Industry = 
     | 'Blockchain'

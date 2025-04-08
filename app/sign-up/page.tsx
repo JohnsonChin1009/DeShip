@@ -60,7 +60,7 @@ export default function SignUpPage() {
                     <p className="text-lg text-black">Please choose your preferred role</p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mx-auto">
                     <RoleCard
                         role="Student"
                         image="/student.png"

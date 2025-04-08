@@ -32,7 +32,7 @@ export default function DashboardPage() {
 const StudentDashboard = () => {
     return (
         <>
-            <main className="bg-[#F0EBE3] min-w-full">
+            <main className="bg-[#F0EBE3] min-w-full flex flex-col gap-3">
                 Student Dashboard
                 <PrivyButton />
             </main>
