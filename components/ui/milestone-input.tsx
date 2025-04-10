@@ -58,7 +58,7 @@ const MilestoneInput = React.forwardRef<HTMLDivElement, MilestoneInputProps>(
             <Input
               type="number"
               placeholder="Amount"
-              value={milestone.amount || ""}
+              value={milestone.amount ?? ""}
               onChange={(e) =>
                 handleMilestoneChange(index, "amount", e.target.value)
               }
