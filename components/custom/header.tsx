@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Bell, ChevronDown, Globe2, Plus, PanelRightClose } from 'lucide-react';
-
+import PrivyButton from '@/components/custom/privy-button';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -28,9 +28,9 @@ export function Header({
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-3">
           {!sidebarOpen && toggleSidebar && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="mr-2"
               onClick={toggleSidebar}
             >
@@ -63,6 +63,7 @@ export function Header({
               <DropdownMenuItem>Transaction History</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <PrivyButton />
         </div>
       </div>
     </header>

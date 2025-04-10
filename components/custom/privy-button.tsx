@@ -4,13 +4,14 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ethers } from "ethers";
 import { roleNFT_CA, roleNFT_ABI } from "@/lib/contractABI";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function PrivyButton() {
     const { ready, authenticated, login, logout, user } = usePrivy();
     const [ hasUserRole, setHasUserRole ] = useState<undefined | boolean>(undefined);
     const [ dropdownOpen, setDropdownOpen ] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
     const hasRedirected = useRef(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     
@@ -50,23 +51,33 @@ export default function PrivyButton() {
         }
     }, [authenticated, user, contract]);
 
-    // Handle routing based on user role - use ref to prevent multiple redirects
+    // Handle routing based on user role - only redirect use land on homepage
     useEffect(() => {
+        if (pathname !== "/" && !(pathname === "/sign-up" && hasUserRole === false)) {
+            return;
+        }
+
         if (!authenticated) {
             hasRedirected.current = false;
-            router.replace("/");
+            if (pathname === "/") {
+                router.replace("/");
+            }
             return;
         }
 
         if (hasUserRole !== undefined && !hasRedirected.current) {
             hasRedirected.current = true;
             if (hasUserRole) {
-                router.replace("/dashboard");
+                if (pathname === "/") {
+                    router.replace("/dashboard");
+                }
             } else {
-                router.replace("/sign-up");
+                if (pathname === "/" || pathname !== "/sign-up") {
+                    router.replace("/sign-up");
+                }
             }
         }
-    }, [authenticated, hasUserRole, router]);
+    }, [authenticated, hasUserRole, router, pathname]);
 
     // Function to close dropdown when clicking outside
     useEffect(() => {
