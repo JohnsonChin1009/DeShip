@@ -11,32 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileInput } from '@/components/ui/file-input';
 import { MilestoneInput, type Milestone } from '@/components/ui/milestone-input';
 import { Sidebar } from '@/components/custom/sidebar';
 import { Header } from '@/components/custom/header';
 
-// Define field of study options as a constant array
-const FIELDS_OF_STUDY = [
-  'Computer Science',
-  'Engineering',
-  'Business',
-  'Mathematics',
-  'Economics',
-  'Environmental Science',
-  'Finance',
-  'Other'
-] as const;
-
-// Define academic levels
-const ACADEMIC_LEVELS = [
-  'Undergraduate',
-  'Graduate',
-  'PhD',
-  'Postdoctoral'
-] as const;
 
 // form schema for the validation (might need to change ltr)
 const formSchema = z.object({
@@ -44,8 +25,6 @@ const formSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
   eligibility: z.object({
     gpa: z.coerce.number().min(0, { message: "GPA must be at least 0" }).max(4, { message: "GPA must be at most 4" }),
-    fieldOfStudy: z.array(z.string()).min(1, { message: "Select at least one field of study" }),
-    academicLevel: z.string().min(1, { message: "Academic level is required" }),
     additionalRequirements: z.string().optional(),
   }),
   amount: z.coerce.number().min(1, { message: "Amount must be at least 1" }),
@@ -89,8 +68,6 @@ export default function CreateScholarshipPage() {
       description: "",
       eligibility: {
         gpa: 3.0,
-        fieldOfStudy: [],
-        academicLevel: "",
         additionalRequirements: "",
       },
       amount: 0,
@@ -192,80 +169,6 @@ export default function CreateScholarshipPage() {
                           </FormControl>
                           <FormDescription>
                             The minimum GPA required for applicants (0-4 scale).
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="eligibility.fieldOfStudy"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Field of Study</FormLabel>
-                          <FormControl>
-                            <Select
-                              onValueChange={(value) => field.onChange([...field.value, value])}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select field(s) of study" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {FIELDS_OF_STUDY.map((fieldOfStudy) => (
-                                  <SelectItem key={fieldOfStudy} value={fieldOfStudy}>
-                                    {fieldOfStudy}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormDescription>
-                            The fields of study eligible for this scholarship.
-                          </FormDescription>
-                          <FormMessage />
-                          {field.value.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {field.value.map((item) => (
-                                <div key={item} className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs">
-                                  {item}
-                                  <button
-                                    type="button"
-                                    onClick={() => field.onChange(field.value.filter((i) => i !== item))}
-                                    className="ml-1 rounded-full hover:bg-primary/20"
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="eligibility.academicLevel"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Academic Level</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select academic level" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {ACADEMIC_LEVELS.map((level) => (
-                                <SelectItem key={level} value={level}>
-                                  {level}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            The academic level required for this scholarship.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
