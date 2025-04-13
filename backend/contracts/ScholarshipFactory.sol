@@ -14,6 +14,11 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
     address[] public scholarships;
     mapping(address => address[]) public companyScholarships;
 
+    // Verification
+    mapping(address => bool) public verifiedCompanies;
+    event CompanyVerified(address indexed companyAddress);
+    event CompanyUnverified(address indexed companyAddress);
+
     event ScholarshipCreated(
         address indexed scholarshipAddress,
         address indexed company,
@@ -23,6 +28,19 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
     );
 
     constructor(address initialOwner) Ownable(initialOwner) {}
+
+    // Add verification management functions
+    function verifyAddress(address _company) external onlyOwner {
+        require(!verifiedCompanies[_company], "Address already verified");
+        verifiedCompanies[_company] = true;
+        emit CompanyVerified(_company);
+    }
+
+    function unverifyAddress(address _company) external onlyOwner {
+        require(verifiedCompanies[_company], "Address not verified");
+        verifiedCompanies[_company] = false;
+        emit CompanyUnverified(_company);
+    }
 
     function createScholarship(
         string memory _title,
@@ -34,6 +52,7 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         string[] memory _milestoneTitles,
         uint256[] memory _milestoneAmounts
     ) public payable nonReentrant returns (address) {
+        require(verifiedCompanies[msg.sender], "Address not verified");
         require(msg.value >= _totalAmount, "Insufficient funds sent");
         require(_milestoneTitles.length == _milestoneAmounts.length, "Milestone data mismatch");
         
@@ -65,6 +84,11 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         );
 
         return scholarshipAddress;
+    }
+
+    // function to get verified address
+    function checkVerifiedAddress(address _company) public view returns (bool) {
+        return verifiedCompanies[_company];
     }
 
     // Keep rest of factory functions unchanged
