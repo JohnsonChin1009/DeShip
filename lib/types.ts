@@ -1,5 +1,3 @@
-import { StringValidation } from "zod";
-
 export interface Company {
     id: string;
     name: string;
