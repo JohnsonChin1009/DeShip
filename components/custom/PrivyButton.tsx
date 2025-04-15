@@ -8,14 +8,10 @@ import { useRouter, usePathname } from "next/navigation";
 
 export default function PrivyButton() {
   const { ready, authenticated, login, logout, user } = usePrivy();
-  const [hasUserRole, setHasUserRole] = useState<undefined | boolean>(
-    undefined
-  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
-  const hasRedirected = useRef(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   // Create contract instance only once using useMemo
   const contract = useMemo(() => {
@@ -25,66 +21,39 @@ export default function PrivyButton() {
     return new ethers.Contract(roleNFT_CA, roleNFT_ABI, provider);
   }, []);
 
-  // Check NFT ownership in an effect to handle async properly
+  const handleLogout = async () => {
+    await logout();
+
+    setDropdownOpen(false);
+    localStorage.removeItem("userRole");
+    router.refresh();
+  }
+
+  // Check if user has the role NFT and redirect accordingly
   useEffect(() => {
-    async function checkUserRole() {
+    if (pathname !== "/") return;
+
+    const checkAndRedirect = async () => {
       if (authenticated && user?.wallet?.address) {
         try {
-          const result = await contract.hasRoleNFT(user.wallet.address);
+          const hasNFT = await contract.hasRoleNFT(user.wallet.address);
 
-          if (!result) {
-            console.log("User does not have role NFT");
+          if (!hasNFT) {
+            router.replace("/sign-up");
+            return;
           }
 
           const role = await contract.getUserRole(user.wallet.address);
-
-          if (!role) {
-            console.error("Error fetching user role from contract");
-          }
-
           localStorage.setItem("userRole", role);
-          setHasUserRole(result);
-        } catch (error) {
-          console.error("❌ Error checking role NFT:", error);
-        }
-      }
-    }
-
-    if (authenticated && user?.wallet?.address) {
-      checkUserRole();
-    }
-  }, [authenticated, user, contract]);
-
-  // Handle routing based on user role - only redirect use land on homepage
-  useEffect(() => {
-    if (
-      pathname !== "/" &&
-      !(pathname === "/sign-up" && hasUserRole === false)
-    ) {
-      return;
-    }
-
-    if (!authenticated) {
-      hasRedirected.current = false;
-      if (pathname === "/") {
-        router.replace("/");
-      }
-      return;
-    }
-
-    if (hasUserRole !== undefined && !hasRedirected.current) {
-      hasRedirected.current = true;
-      if (hasUserRole) {
-        if (pathname === "/") {
           router.replace("/dashboard");
-        }
-      } else {
-        if (pathname === "/" || pathname !== "/sign-up") {
-          router.replace("/sign-up");
+          } catch (error) {
+            console.error("Error during login with Privy:", error);
+          }
         }
       }
-    }
-  }, [authenticated, hasUserRole, router, pathname]);
+
+      checkAndRedirect();
+    }, [authenticated, user, contract, router, pathname])
 
   // Function to close dropdown when clicking outside (after authenicated)
   useEffect(() => {
@@ -127,7 +96,7 @@ export default function PrivyButton() {
       {dropdownOpen && (
         <div className="absolute bottom-full mb-2 left-0 w-full bg-white border border-gray-300 rounded-xl shadow-lg z-50 hover:-translate-y-1 duration-300 hover:border-[#2c2c2c]">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="block w-full px-3 py-2 text-center hover:font-semibold"
           >
             Disconnect
