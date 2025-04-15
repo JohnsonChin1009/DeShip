@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,16 +45,29 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CreateScholarshipPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [role, setRole] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('dashboard');
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const company = {
-    name: "TechCorp",
-    logo: "/images/techcorp-logo.png",
-    industry: "Technology",
-  };
+  // const company = {
+  //   name: "TechCorp",
+  //   logo: "/images/techcorp-logo.png",
+  //   industry: "Technology",
+  // };
+
+  // To set the user's role from localStorage
+  useEffect(() => {
+      const userRole = localStorage.getItem("userRole");
+
+      if (!userRole) {
+          return; 
+      }
+
+      setRole(userRole);
+  }, [])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -150,150 +163,314 @@ export default function CreateScholarshipPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar company={company} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      <Sidebar
+        role={role}
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
 
-      <main className={`${sidebarOpen ? 'ml-64' : 'ml-0'} min-h-screen bg-background transition-all`}>
-        <Header title="Create Scholarship" sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <main
+        className={`${
+          sidebarOpen ? 'ml-64' : 'ml-0'
+        } min-h-screen bg-background transition-all`}
+      >
+        <Header
+          title="Create Scholarship"
+          sidebarOpen={sidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
 
         <div className="p-6">
           <Card>
             <CardHeader>
               <CardTitle>Scholarship Details</CardTitle>
-              <CardDescription>Create a new scholarship program for students. Fill in all the required information below.</CardDescription>
+              <CardDescription>
+                Create a new scholarship program for students. Fill in all the
+                required information below.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-8"
+                >
                   <div className="space-y-6">
                     <h3 className="text-lg font-medium">Basic Information</h3>
 
-                    <FormField control={form.control} name="title" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Scholarship Name</FormLabel>
-                        <FormControl><Input placeholder="e.g., Future Tech Leaders Scholarship" {...field} /></FormControl>
-                        <FormDescription>The name of your scholarship program.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Scholarship Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., Future Tech Leaders Scholarship"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            The name of your scholarship program.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <FormField control={form.control} name="description" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl><Textarea placeholder="Describe the purpose and goals of this scholarship..." className="min-h-32" {...field} /></FormControl>
-                        <FormDescription>Provide a detailed description of the scholarship program.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Describe the purpose and goals of this scholarship..."
+                              className="min-h-32"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Provide a detailed description of the scholarship
+                            program.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="space-y-6">
-                    <h3 className="text-lg font-medium">Eligibility Criteria</h3>
+                    <h3 className="text-lg font-medium">
+                      Eligibility Criteria
+                    </h3>
 
-                    <FormField control={form.control} name="eligibility.gpa" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Minimum GPA</FormLabel>
-                        <FormControl><Input type="number" step="0.1" min="0" max="4" {...field} /></FormControl>
-                        <FormDescription>The minimum GPA required for applicants (0-4 scale).</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="eligibility.gpa"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Minimum GPA</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              max="4"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            The minimum GPA required for applicants (0-4 scale).
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <FormField control={form.control} name="eligibility.additionalRequirements" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Additional Requirements (Optional)</FormLabel>
-                        <FormControl><Textarea placeholder="Any additional eligibility requirements..." {...field} /></FormControl>
-                        <FormDescription>Any additional requirements or qualifications for applicants.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="eligibility.additionalRequirements"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Additional Requirements (Optional)
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Any additional eligibility requirements..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Any additional requirements or qualifications for
+                            applicants.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="space-y-6">
                     <h3 className="text-lg font-medium">Funding Details</h3>
 
-                    <FormField control={form.control} name="amount" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Amount (in cryptocurrency)</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
-                        <FormDescription>The total amount of funding for this scholarship.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Total Amount (in cryptocurrency)
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The total amount of funding for this scholarship.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                    <FormField control={form.control} name="deadline" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Application Deadline</FormLabel>
-                        <FormControl><Input type="date" {...field} /></FormControl>
-                        <FormDescription>The deadline for applications.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Application Deadline</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            The deadline for applications.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
                     <div className="space-y-6">
                       <h3 className="text-lg font-medium">Milestones</h3>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="milestones.title1" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 1 Title</FormLabel>
-                            <FormControl><Input placeholder="e.g., Application" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        <FormField control={form.control} name="milestones.amount1" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 1 Amount (ETH)</FormLabel>
-                            <FormControl><Input type="number" step="0.00001" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
+                        <FormField
+                          control={form.control}
+                          name="milestones.title1"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 1 Title</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g., Application"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="milestones.amount1"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 1 Amount (ETH)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.00001"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="milestones.title2" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 2 Title</FormLabel>
-                            <FormControl><Input placeholder="e.g., Interview" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        <FormField control={form.control} name="milestones.amount2" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 2 Amount (ETH)</FormLabel>
-                            <FormControl><Input type="number" step="0.00001" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
+                        <FormField
+                          control={form.control}
+                          name="milestones.title2"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 2 Title</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g., Interview"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="milestones.amount2"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 2 Amount (ETH)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.00001"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="milestones.title3" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 3 Title</FormLabel>
-                            <FormControl><Input placeholder="e.g., Award Disbursement" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
-                        <FormField control={form.control} name="milestones.amount3" render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Milestone 3 Amount (ETH)</FormLabel>
-                            <FormControl><Input type="number" step="0.00001" {...field} /></FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )} />
+                        <FormField
+                          control={form.control}
+                          name="milestones.title3"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 3 Title</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g., Award Disbursement"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="milestones.amount3"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Milestone 3 Amount (ETH)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.00001"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
 
-                    <FormField control={form.control} name="termsFile" render={({ field: { onChange, ...fieldProps } }) => (
-                      <FormItem>
-                        <FormLabel>Terms & Conditions</FormLabel>
-                        <FormControl><FileInput accept=".pdf,.doc,.docx" onChange={(e) => onChange(e.target.files)} {...fieldProps} /></FormControl>
-                        <FormDescription>Upload a document with the terms and conditions for this scholarship.</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField
+                      control={form.control}
+                      name="termsFile"
+                      render={({ field: { onChange, ...fieldProps } }) => (
+                        <FormItem>
+                          <FormLabel>Terms & Conditions</FormLabel>
+                          <FormControl>
+                            <FileInput
+                              accept=".pdf,.doc,.docx"
+                              onChange={(e) => onChange(e.target.files)}
+                              {...fieldProps}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Upload a document with the terms and conditions for
+                            this scholarship.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="flex justify-end space-x-4">
-                    <Button variant="outline" type="button" asChild><Link href="/company/dashboard">Cancel</Link></Button>
+                    <Button variant="outline" type="button" asChild>
+                      <Link href="/company/dashboard">Cancel</Link>
+                    </Button>
                     <Button type="submit">Create Scholarship</Button>
                   </div>
                 </form>

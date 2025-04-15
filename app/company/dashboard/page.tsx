@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import {
   Bar,
@@ -28,16 +28,35 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function CompanyDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [role, setRole] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('dashboard');
+
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // To set the user's role from localStorage
+  useEffect(() => {
+      const userRole = localStorage.getItem("userRole");
+
+      if (!userRole) {
+          return; 
+      }
+
+      setRole(userRole);
+  }, [])
+
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar company={company} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-
+      <Sidebar
+        role={role}
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
       {/* Main Content */}
       <main className={`${sidebarOpen ? 'ml-64' : 'ml-0'} min-h-screen bg-background transition-all`}>
         {/* Header */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Sidebar } from "@/components/custom/sidebar";
+import Sidebar from '@/components/custom/sidebar';
 import { Header } from "@/components/custom/header";
 import { Eye, Search } from "lucide-react";
 import { mockScholarships } from "@/lib/mockData";
@@ -22,16 +22,29 @@ export default function ScholarshipListingPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(3);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [role, setRole] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('dashboard');
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   // Mock company data
-  const company = {
-    name: "Blockchain Education Fund",
-    logo: "/images/techcorp-logo.png",
-    industry: "Education",
-  };
+  // const company = {
+  //   name: "Blockchain Education Fund",
+  //   logo: "/images/techcorp-logo.png",
+  //   industry: "Education",
+  // };
+
+  // To set the user's role from localStorage
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userRole) {
+      return;
+    }
+
+    setRole(userRole);
+  }, []);
 
   // Filter scholarships based on search query (case-insensitive)
   const filteredScholarships = scholarships.filter((scholarship) =>
@@ -51,12 +64,23 @@ export default function ScholarshipListingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar company={company} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      <Sidebar
+        role={role}
+        isOpen={sidebarOpen}
+        setIsOpen={setSidebarOpen}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
 
       {/* Main Content */}
-      <main className={`${sidebarOpen ? "ml-64" : "ml-0"} min-h-screen bg-background transition-all`}>
+      <main
+        className={`${
+          sidebarOpen ? 'ml-64' : 'ml-0'
+        } min-h-screen bg-background transition-all`}
+      >
         {/* Header */}
-        <Header title="Scholarship Listings"
+        <Header
+          title="Scholarship Listings"
           showCreateButton={true}
           createButtonLink="/company/create-scholarship"
           createButtonText="Create Scholarship"
@@ -71,7 +95,9 @@ export default function ScholarshipListingPage() {
               {/* Title and Description (Left Side) */}
               <div>
                 <CardTitle>Scholarships</CardTitle>
-                <CardDescription>Manage and review the available scholarship programs.</CardDescription>
+                <CardDescription>
+                  Manage and review the available scholarship programs.
+                </CardDescription>
               </div>
               {/* Search Field (Right Side) */}
               <div className="relative w-full max-w-md">
@@ -94,24 +120,44 @@ export default function ScholarshipListingPage() {
                 <table className="w-full border-collapse border border-gray-200 min-w-max">
                   <thead>
                     <tr className="bg-gray-100">
-                      <th className="border border-gray-200 px-4 py-2 text-left">Title</th>
-                      <th className="border border-gray-200 px-4 py-2 text-left">Amount</th>
-                      <th className="border border-gray-200 px-4 py-2 text-left">Deadline</th>
-                      <th className="border border-gray-200 px-4 py-2 text-left">Status</th>
-                      <th className="border border-gray-200 px-4 py-2 text-center">Actions</th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        Title
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        Amount
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        Deadline
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-left">
+                        Status
+                      </th>
+                      <th className="border border-gray-200 px-4 py-2 text-center">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {paginatedScholarships.length > 0 ? (
                       paginatedScholarships.map((scholarship) => (
                         <tr key={scholarship.id} className="hover:bg-gray-50">
-                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">{scholarship.title}</td>
-                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">${scholarship.amount}</td>
-                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">{scholarship.deadline}</td>
-                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">{scholarship.status}</td>
+                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">
+                            {scholarship.title}
+                          </td>
+                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">
+                            ${scholarship.amount}
+                          </td>
+                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">
+                            {scholarship.deadline}
+                          </td>
+                          <td className="border border-gray-200 px-4 py-2 whitespace-nowrap">
+                            {scholarship.status}
+                          </td>
                           <td className="border border-gray-200 px-4 py-2 text-center">
                             <Button variant="outline" size="sm" asChild>
-                              <Link href={`/company/scholarship-details/${scholarship.id}`}>
+                              <Link
+                                href={`/company/scholarship-details/${scholarship.id}`}
+                              >
                                 <Eye className="inline mr-1 w-4 h-4" /> View
                               </Link>
                             </Button>
@@ -120,7 +166,10 @@ export default function ScholarshipListingPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="border border-gray-200 px-4 py-2 text-center text-gray-500">
+                        <td
+                          colSpan={5}
+                          className="border border-gray-200 px-4 py-2 text-center text-gray-500"
+                        >
                           No scholarships found matching your search.
                         </td>
                       </tr>
@@ -136,18 +185,22 @@ export default function ScholarshipListingPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
                     disabled={currentPage === 1}
                   >
-                    {"<<"}
+                    {'<<'}
                   </Button>
                   {pageNumbers.map((number) => (
                     <Button
                       key={number}
-                      variant={currentPage === number ? "default" : "outline"}
+                      variant={currentPage === number ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setCurrentPage(number)}
-                      className={currentPage === number ? "bg-blue-500 text-white" : ""}
+                      className={
+                        currentPage === number ? 'bg-blue-500 text-white' : ''
+                      }
                     >
                       {number}
                     </Button>
@@ -155,10 +208,12 @@ export default function ScholarshipListingPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
                     disabled={currentPage === totalPages}
                   >
-                    {">>"}
+                    {'>>'}
                   </Button>
                 </div>
                 {/* Counter in the Bottom Middle */}
