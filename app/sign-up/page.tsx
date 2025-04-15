@@ -1,7 +1,7 @@
 "use client";
 
 import RoleCard from "@/components/custom/role-card";
-import PrivyButton from "@/components/custom/privy-button";
+import PrivyButton from "@/components/custom/PrivyButton";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
 

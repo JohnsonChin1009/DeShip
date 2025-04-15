@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { Bell, ChevronDown, Globe2, Plus, PanelRightClose } from 'lucide-react';
-import PrivyButton from '@/components/custom/privy-button';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -63,7 +62,6 @@ export function Header({
               <DropdownMenuItem>Transaction History</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <PrivyButton />
         </div>
       </div>
     </header>

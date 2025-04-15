@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import PrivyButton from "@/components/custom/privy-button";
+import Sidebar from "@/components/custom/sidebar";
 
 export default function DashboardPage() {
     const [role, setRole ] = useState<string>("");
+    const [selectedTab, setSelectedTab] = useState<string>("dashboard");
+    const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // NEW
 
+    // To set the user's role from localStorage
     useEffect(() => {
         const userRole = localStorage.getItem("userRole");
 
@@ -16,16 +19,19 @@ export default function DashboardPage() {
         setRole(userRole);
     }, [])
 
+    useEffect(() => {
+        console.log("Selected Tab:", selectedTab);
+    }, [selectedTab]);
+
     return (
-        <>
-            <main className="min-h-screen flex bg-">
-                { role === "Student" ? <StudentDashboard/> :
-                role === "Company" ? <CompanyDashboard/> :
-                <div>
-                    Loading {/* Will replace with Loading Skeleton */}
-                </div>}
-            </main>
-        </> 
+        <main className="min-h-screen flex bg-">
+            <Sidebar role={role} isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+            { role === "Student" ? <StudentDashboard/> :
+            role === "Company" ? <CompanyDashboard/> :
+            <div>
+                Loading {/* Will replace with Loading Skeleton */}
+            </div>}
+        </main>
     )
 }
 
@@ -34,7 +40,6 @@ const StudentDashboard = () => {
         <>
             <main className="bg-[#F0EBE3] min-w-full flex flex-col gap-3">
                 Student Dashboard
-                <PrivyButton />
             </main>
         </>
     )

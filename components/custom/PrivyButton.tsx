@@ -21,6 +21,13 @@ export default function PrivyButton() {
         return new ethers.Contract(roleNFT_CA, roleNFT_ABI, provider);
     }, []);
 
+    const handleUserLogout = () => {
+        localStorage.removeItem("userRole");
+        logout();
+        setHasUserRole(undefined);
+        router.replace("/");
+    }
+
     // Check NFT ownership in an effect to handle async properly
     useEffect(() => {
         async function checkUserRole() {
@@ -98,10 +105,10 @@ export default function PrivyButton() {
     }
 
     return authenticated ? (
-        <div className="relative inline-block" ref={dropdownRef}>
+        <div className="relative inline-block w-full" ref={dropdownRef}>
             <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="border-2 border-gray-300 hover:border-2 px-4 py-2 text-[13px] flex items-center justify-center gap-2 rounded-xl  hover:border-[#1C1C1C]"
+                className="w-full border-2 border-gray-300 hover:border-2 px-4 py-2 text-[13px] flex items-center justify-center gap-2 rounded-xl  hover:border-[#2c2c2c]"
             >
                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                 {user?.wallet?.address
@@ -109,10 +116,10 @@ export default function PrivyButton() {
                     : "Menu"}
             </button>
             {dropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-transparent border border-gray-300 rounded-xl shadow-lg z-50">
+                <div className="absolute bottom-full mb-2 left-0 w-full bg-white border border-gray-300 rounded-xl shadow-lg z-50 hover:-translate-y-1 duration-300">
                     <button
-                        onClick={logout}
-                        className="block w-full px-3 py-2 text-center hover:font-medium"
+                        onClick={handleUserLogout}
+                        className="block w-full px-3 py-2 text-center hover:font-semibold"
                     >
                         Disconnect
                     </button>

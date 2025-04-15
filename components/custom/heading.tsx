@@ -2,7 +2,7 @@
 
 import { LuMenu } from "react-icons/lu";
 import { useEffect, useState, useRef } from "react";
-import PrivyButton from "@/components/custom/privy-button";
+import PrivyButton from "@/components/custom/PrivyButton";
 import Link from "next/link";
 
 export default function Heading() {

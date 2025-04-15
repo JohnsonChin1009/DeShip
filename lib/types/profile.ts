@@ -1,6 +1,5 @@
 interface UserProfile {
-    id: string;
-    walletAddress: string;
+    walletAddress: string; // Primary Key for each user
     username: string;
     description: string;
     avatarUrl?: string;    // Optional Profile Picture

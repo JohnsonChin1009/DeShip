@@ -19,7 +19,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Sidebar } from '@/components/custom/sidebar';
+import Sidebar from '@/components/custom/sidebar';
 import { Header } from '@/components/custom/header';
 import { mockCompanies, mockScholars, mockTransactions } from '@/lib/mockData';
 
