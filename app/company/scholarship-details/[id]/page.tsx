@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+//will add interface later
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -12,31 +14,139 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Sidebar } from "@/components/custom/sidebar";
+import Sidebar from '@/components/custom/sidebar';
 import { Header } from "@/components/custom/header";
-import { mockScholarships } from "@/lib/mockData";
+import { ethers } from "ethers";
+import { scholarship_ABI } from "@/lib/contractABI";
+import { ScholarshipEditDialog } from "@/components/custom/ScholarshipEditDialog";
+
+const statusMapping = ["Open", "In Progress", "Closed", "Completed"];
 
 export default function ScholarshipDetailsPage() {
   const { id } = useParams();
-  const scholarship = mockScholarships.find((s) => s.id === parseInt(id as string));
-
-  // Add state for sidebar
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [scholarship, setScholarship] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [role, setRole] = useState<string>('');
+  const [selectedTab, setSelectedTab] = useState<string>('dashboard');
+  const [milestones, setMilestones] = useState<any[]>([]);
+  const [applicants, setApplicants] = useState<string[]>([]);
+  const [approvedStudents, setApprovedStudents] = useState<string[]>([]);
 
-  // Add toggle function
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  if (!scholarship) {
-    return <div className="min-h-screen flex items-center justify-center">Scholarship not found.</div>;
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole) {
+      setRole(userRole);
+    }
+    
+    if (id) {
+      fetchScholarshipDetails();
+    }
+  }, [id]);
+
+  const fetchScholarshipDetails = async () => {
+    setLoading(true);
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        
+        // Connect to the Scholarship contract using the address from params
+        const scholarshipContract = new ethers.Contract(
+          id as string,
+          scholarship_ABI,
+          provider
+        );
+        
+        const title = await scholarshipContract.title();
+        const description = await scholarshipContract.description();
+        const totalAmount = await scholarshipContract.totalAmount();
+        const deadline = await scholarshipContract.deadline();
+        const status = await scholarshipContract.status();
+        const company = await scholarshipContract.company();
+        const eligibility = await scholarshipContract.eligibility();
+        const balance = await scholarshipContract.getContractBalance();
+        
+        const totalMilestones = await scholarshipContract.getTotalMilestones();
+        const milestonesPromises = [];
+        
+        for (let i = 0; i < Number(totalMilestones); i++) {
+          milestonesPromises.push(scholarshipContract.getMilestone(i));
+        }
+        
+        const milestonesData = await Promise.all(milestonesPromises);
+        const formattedMilestones = milestonesData.map((milestone, index) => ({
+          id: index,
+          title: milestone.titleReturn,
+          amount: ethers.formatEther(milestone.amount),
+          isCompleted: milestone.isCompleted
+        }));
+        
+        setMilestones(formattedMilestones);
+        
+        try {
+          const applicantsCount = await scholarshipContract.applicants.length;
+          const approvedStudentsCount = await scholarshipContract.approvedStudents.length;
+          
+          setApplicants(new Array(Number(applicantsCount)).fill(''));
+          setApprovedStudents(new Array(Number(approvedStudentsCount)).fill(''));
+        } catch (error) {
+          console.log("Could not fetch applicants/approved students arrays:", error);
+        }
+        
+        //mapping
+        const scholarshipData = {
+          address: id,
+          title: title,
+          description: description,
+          amount: ethers.formatEther(totalAmount),
+          deadline: new Date(Number(deadline) * 1000),
+          status: statusMapping[Number(status)],
+          company: company,
+          gpa: Number(eligibility.gpa) / 100, // GPA is likely stored with 2 decimal places
+          additionalRequirements: eligibility.additionalRequirements,
+          remainingBalance: ethers.formatEther(balance),
+          applicantsCount: applicants.length,
+          selectedScholarsCount: approvedStudents.length
+        };
+        
+        setScholarship(scholarshipData);
+      }
+    } catch (error) {
+      console.error("Error fetching scholarship details:", error);
+      setError("Could not load scholarship details. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading scholarship details...
+      </div>
+    );
+  }
+
+  if (error || !scholarship) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        {error || "Scholarship not found."}
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar
-        company={{ name: "Blockchain Education Fund", logo: "/images/techcorp-logo.png", industry: "Education" }}
+        role={role}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
       />
 
       {/* Main Content */}
@@ -57,9 +167,18 @@ export default function ScholarshipDetailsPage() {
             <Link href="/company/scholars">{"< Back to Listings"}</Link>
           </Button>
           <div className="space-x-2">
-            <Button variant="outline" size="sm">
-              <Pencil className="w-4 h-4 mr-1" /> Edit
-            </Button>
+            <ScholarshipEditDialog 
+              scholarshipAddress={id as string}
+              scholarshipData={{
+                title: scholarship.title,
+                description: scholarship.description,
+                gpa: scholarship.gpa,
+                additionalRequirements: scholarship.additionalRequirements,
+                deadline: scholarship.deadline
+              }}
+              contractABI={scholarship_ABI}
+              onUpdate={fetchScholarshipDetails}
+            />
             <Button variant="destructive" size="sm">
               <Trash2 className="w-4 h-4 mr-1" /> Delete
             </Button>
@@ -74,13 +193,15 @@ export default function ScholarshipDetailsPage() {
                 <div>
                   <CardTitle className="text-2xl font-bold text-gray-800">{scholarship.title}</CardTitle>
                   <CardDescription className="text-gray-600 mt-1">
-                    Offered by: {scholarship.organization}
+                    Contract Address: {scholarship.address.slice(0, 8)}...{scholarship.address.slice(-6)}
                   </CardDescription>
                 </div>
-                <div className={`text-sm font-medium px-3 py-1 rounded-full ${scholarship.status === "Active" ? "bg-green-100 text-green-800" :
-                  scholarship.status === "Draft" ? "bg-yellow-100 text-yellow-800" :
-                    scholarship.status === "Closed" ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800"
-                  }`}>
+                <div className={`text-sm font-medium px-3 py-1 rounded-full ${
+                  scholarship.status === "Open" ? "bg-green-100 text-green-800" :
+                  scholarship.status === "In Progress" ? "bg-blue-100 text-blue-800" :
+                  scholarship.status === "Closed" ? "bg-yellow-100 text-yellow-800" : 
+                  "bg-gray-100 text-gray-800"
+                }`}>
                   {scholarship.status}
                 </div>
               </div>
@@ -91,12 +212,16 @@ export default function ScholarshipDetailsPage() {
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">Amount</label>
-                    <p className="text-lg font-semibold text-gray-800">${scholarship.amount}</p>
+                    <p className="text-lg font-semibold text-gray-800">{scholarship.amount} ETH</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Remaining Balance</label>
+                    <p className="text-lg font-semibold text-gray-800">{scholarship.remainingBalance} ETH</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">Deadline</label>
                     <p className="text-lg font-semibold text-gray-800">
-                      {new Date(scholarship.deadline).toLocaleDateString("en-US", {
+                      {scholarship.deadline.toLocaleDateString("en-US", {
                         month: "long",
                         day: "numeric",
                         year: "numeric",
@@ -104,23 +229,72 @@ export default function ScholarshipDetailsPage() {
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Applicants</label>
-                    <p className="text-lg font-semibold text-gray-800">{scholarship.applicants}</p>
+                    <label className="text-sm font-medium text-gray-500">Eligibility</label>
+                    <p className="text-gray-800">
+                      <span className="font-medium">Minimum GPA:</span> {scholarship.gpa}
+                    </p>
+                    {scholarship.additionalRequirements && (
+                      <p className="text-gray-800 mt-1">
+                        <span className="font-medium">Additional Requirements:</span> {scholarship.additionalRequirements}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* Right Column */}
                 <div className="space-y-4">
                   <div>
+                    <label className="text-sm font-medium text-gray-500">Applicants</label>
+                    <p className="text-lg font-semibold text-gray-800">{scholarship.applicantsCount}</p>
+                  </div>
+                  <div>
                     <label className="text-sm font-medium text-gray-500">Selected Scholars</label>
                     <p className="text-lg font-semibold text-gray-800">
-                      {scholarship.selectedScholars} / {scholarship.totalSlots}
+                      {scholarship.selectedScholarsCount}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">Description</label>
                     <p className="text-gray-700 leading-relaxed">{scholarship.description}</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Milestones Section */}
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Milestones</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-200">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-200 px-4 py-2 text-left">Title</th>
+                        <th className="border border-gray-200 px-4 py-2 text-left">Amount (ETH)</th>
+                        <th className="border border-gray-200 px-4 py-2 text-left">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {milestones.map((milestone) => (
+                        <tr key={milestone.id} className="hover:bg-gray-50">
+                          <td className="border border-gray-200 px-4 py-2">{milestone.title}</td>
+                          <td className="border border-gray-200 px-4 py-2">{milestone.amount}</td>
+                          <td className="border border-gray-200 px-4 py-2">
+                            <span className={`px-2 py-1 rounded ${
+                              milestone.isCompleted ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                            }`}>
+                              {milestone.isCompleted ? "Completed" : "Pending"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                      {milestones.length === 0 && (
+                        <tr>
+                          <td colSpan={3} className="border border-gray-200 px-4 py-2 text-center text-gray-500">
+                            No milestones found.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </CardContent>
