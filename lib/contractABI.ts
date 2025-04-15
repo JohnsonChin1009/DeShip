@@ -728,808 +728,878 @@ const roleNFT_ABI = [
     "type": "function"
   }
 ];
-const scholarshipFactory_CA = '0x03955e5CC84FeC5d2cA69198795a1982994F225A'
+const scholarshipFactory_CA = '0x0a566913Df7DC7b64689038F8d0397d0AE7E27B7';
 const scholarshipFactory_ABI = [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "initialOwner",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    name: 'OwnableInvalidOwner',
+    type: 'error',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
     ],
-    "name": "OwnableInvalidOwner",
-    "type": "error"
+    name: 'OwnableUnauthorizedAccount',
+    type: 'error',
   },
   {
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: 'address',
+        name: 'companyAddress',
+        type: 'address',
+      },
     ],
-    "name": "OwnableUnauthorizedAccount",
-    "type": "error"
+    name: 'CompanyUnverified',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "companyAddress",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: 'address',
+        name: 'companyAddress',
+        type: 'address',
+      },
     ],
-    "name": "CompanyUnverified",
-    "type": "event"
+    name: 'CompanyVerified',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "companyAddress",
-        "type": "address"
-      }
-    ],
-    "name": "CompanyVerified",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_title",
-        "type": "string"
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
       },
       {
-        "internalType": "string",
-        "name": "_description",
-        "type": "string"
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'scholarshipAddress',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "_gpa",
-        "type": "uint256"
+        indexed: true,
+        internalType: 'address',
+        name: 'company',
+        type: 'address',
       },
       {
-        "internalType": "string",
-        "name": "_additionalRequirements",
-        "type": "string"
+        indexed: false,
+        internalType: 'string',
+        name: 'scholarshipTitle',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "_totalAmount",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'totalAmount',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "_deadline",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'scholarshipId',
+        type: 'uint256',
+      },
+    ],
+    name: 'ScholarshipCreated',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_title',
+        type: 'string',
       },
       {
-        "internalType": "string[]",
-        "name": "_milestoneTitles",
-        "type": "string[]"
+        internalType: 'string',
+        name: '_description',
+        type: 'string',
       },
       {
-        "internalType": "uint256[]",
-        "name": "_milestoneAmounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "createScholarship",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
+        internalType: 'uint256',
+        name: '_gpa',
+        type: 'uint256',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "scholarshipAddress",
-        "type": "address"
+        internalType: 'string',
+        name: '_additionalRequirements',
+        type: 'string',
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "company",
-        "type": "address"
+        internalType: 'uint256',
+        name: '_totalAmount',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "string",
-        "name": "scholarshipTitle",
-        "type": "string"
+        internalType: 'uint256',
+        name: '_deadline',
+        type: 'uint256',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "totalAmount",
-        "type": "uint256"
+        internalType: 'string[]',
+        name: '_milestoneTitles',
+        type: 'string[]',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "scholarshipId",
-        "type": "uint256"
-      }
+        internalType: 'uint256[]',
+        name: '_milestoneAmounts',
+        type: 'uint256[]',
+      },
     ],
-    "name": "ScholarshipCreated",
-    "type": "event"
+    name: 'createScholarship',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'payable',
+    type: 'function',
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_company",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
     ],
-    "name": "unverifyAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_company",
-        "type": "address"
-      }
-    ],
-    "name": "verifyAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    stateMutability: 'payable',
+    type: 'receive',
   },
   {
-    "stateMutability": "payable",
-    "type": "receive"
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_company',
+        type: 'address',
+      },
+    ],
+    name: 'unverifyAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_company",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '_company',
+        type: 'address',
+      },
     ],
-    "name": "checkVerifiedAddress",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
+    name: 'verifyAddress',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        internalType: 'address',
+        name: 'initialOwner',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_company',
+        type: 'address',
+      },
+    ],
+    name: 'checkVerifiedAddress',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "name": "companyScholarships",
-    "outputs": [
+    name: 'companyScholarships',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_company",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '_company',
+        type: 'address',
+      },
     ],
-    "name": "getCompanyScholarships",
-    "outputs": [
+    name: 'getCompanyScholarships',
+    outputs: [
       {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
+        internalType: 'address[]',
+        name: '',
+        type: 'address[]',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "_index",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '_index',
+        type: 'uint256',
+      },
     ],
-    "name": "getScholarshipByIndex",
-    "outputs": [
+    name: 'getScholarshipByIndex',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "getTotalScholarships",
-    "outputs": [
+    inputs: [],
+    name: 'getTotalScholarships',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
+    inputs: [],
+    name: 'owner',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "name": "scholarships",
-    "outputs": [
+    name: 'scholarships',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
-    "name": "verifiedCompanies",
-    "outputs": [
+    name: 'verifiedCompanies',
+    outputs: [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    stateMutability: 'view',
+    type: 'function',
+  },
 ];
 const scholarship_ABI = [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "_company",
-        "type": "address"
+        internalType: 'address',
+        name: '_company',
+        type: 'address',
       },
       {
-        "internalType": "string",
-        "name": "_title",
-        "type": "string"
+        internalType: 'string',
+        name: '_title',
+        type: 'string',
       },
       {
-        "internalType": "string",
-        "name": "_description",
-        "type": "string"
+        internalType: 'string',
+        name: '_description',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "_gpa",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: '_gpa',
+        type: 'uint256',
       },
       {
-        "internalType": "string",
-        "name": "_additionalRequirements",
-        "type": "string"
+        internalType: 'string',
+        name: '_additionalRequirements',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "_totalAmount",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: '_totalAmount',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "_deadline",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: '_deadline',
+        type: 'uint256',
       },
       {
-        "internalType": "string[]",
-        "name": "_milestoneTitles",
-        "type": "string[]"
+        internalType: 'string[]',
+        name: '_milestoneTitles',
+        type: 'string[]',
       },
       {
-        "internalType": "uint256[]",
-        "name": "_milestoneAmounts",
-        "type": "uint256[]"
-      }
+        internalType: 'uint256[]',
+        name: '_milestoneAmounts',
+        type: 'uint256[]',
+      },
     ],
-    "stateMutability": "payable",
-    "type": "constructor"
+    stateMutability: 'payable',
+    type: 'constructor',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "student",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'student',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
     ],
-    "name": "FundsReleased",
-    "type": "event"
+    name: 'FundsReleased',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "student",
-        "type": "address"
+        indexed: false,
+        internalType: 'address',
+        name: 'student',
+        type: 'address',
       },
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "milestoneId",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'milestoneId',
+        type: 'uint256',
+      },
     ],
-    "name": "MilestoneCompleted",
-    "type": "event"
+    name: 'MilestoneCompleted',
+    type: 'event',
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "enum Scholarship.ScholarshipStatus",
-        "name": "status",
-        "type": "uint8"
-      }
-    ],
-    "name": "ScholarshipStatusUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "student",
-        "type": "address"
-      }
-    ],
-    "name": "StudentApplied",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "student",
-        "type": "address"
-      }
-    ],
-    "name": "StudentApproved",
-    "type": "event"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "applicants",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "applyForScholarship",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_student",
-        "type": "address"
-      }
-    ],
-    "name": "approveStudent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "approvedStudents",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "company",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_student",
-        "type": "address"
+        indexed: false,
+        internalType: 'string',
+        name: 'newTitle',
+        type: 'string',
       },
       {
-        "internalType": "uint256",
-        "name": "_milestoneId",
-        "type": "uint256"
-      }
-    ],
-    "name": "completeMilestone",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "deadline",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "description",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "eligibility",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "gpa",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'string',
+        name: 'newDescription',
+        type: 'string',
       },
       {
-        "internalType": "string",
-        "name": "additionalRequirements",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getContractBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_milestoneId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getMilestone",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "titleReturn",
-        "type": "string"
+        indexed: false,
+        internalType: 'uint256',
+        name: 'newGpa',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        indexed: false,
+        internalType: 'string',
+        name: 'newAdditionalRequirements',
+        type: 'string',
       },
       {
-        "internalType": "bool",
-        "name": "isCompleted",
-        "type": "bool"
-      }
+        indexed: false,
+        internalType: 'uint256',
+        name: 'newDeadline',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    name: 'ScholarshipDetailsUpdated',
+    type: 'event',
   },
   {
-    "inputs": [],
-    "name": "getScholarshipStatus",
-    "outputs": [
+    anonymous: false,
+    inputs: [
       {
-        "internalType": "enum Scholarship.ScholarshipStatus",
-        "name": "",
-        "type": "uint8"
-      }
+        indexed: false,
+        internalType: 'enum Scholarship.ScholarshipStatus',
+        name: 'status',
+        type: 'uint8',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    name: 'ScholarshipStatusUpdated',
+    type: 'event',
   },
   {
-    "inputs": [],
-    "name": "getTotalMilestones",
-    "outputs": [
+    anonymous: false,
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'address',
+        name: 'student',
+        type: 'address',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    name: 'StudentApplied',
+    type: 'event',
   },
   {
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        indexed: false,
+        internalType: 'address',
+        name: 'student',
+        type: 'address',
+      },
     ],
-    "name": "milestones",
-    "outputs": [
+    name: 'StudentApproved',
+    type: 'event',
+  },
+  {
+    stateMutability: 'payable',
+    type: 'fallback',
+  },
+  {
+    inputs: [
       {
-        "internalType": "string",
-        "name": "title",
-        "type": "string"
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'applicants',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'applyForScholarship',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_student',
+        type: 'address',
+      },
+    ],
+    name: 'approveStudent',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'approvedStudents',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'company',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_student',
+        type: 'address',
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        internalType: 'uint256',
+        name: '_milestoneId',
+        type: 'uint256',
+      },
+    ],
+    name: 'completeMilestone',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'deadline',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'description',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eligibility',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'gpa',
+        type: 'uint256',
       },
       {
-        "internalType": "bool",
-        "name": "isCompleted",
-        "type": "bool"
-      }
+        internalType: 'string',
+        name: 'additionalRequirements',
+        type: 'string',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "status",
-    "outputs": [
+    inputs: [],
+    name: 'getContractBalance',
+    outputs: [
       {
-        "internalType": "enum Scholarship.ScholarshipStatus",
-        "name": "",
-        "type": "uint8"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: 'uint256',
+        name: '_milestoneId',
+        type: 'uint256',
+      },
     ],
-    "name": "studentApplications",
-    "outputs": [
+    name: 'getMilestone',
+    outputs: [
       {
-        "internalType": "address",
-        "name": "studentAddress",
-        "type": "address"
+        internalType: 'string',
+        name: 'titleReturn',
+        type: 'string',
       },
       {
-        "internalType": "bool",
-        "name": "isApproved",
-        "type": "bool"
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
-        "internalType": "uint256",
-        "name": "fundsWithdrawn",
-        "type": "uint256"
-      }
+        internalType: 'bool',
+        name: 'isCompleted',
+        type: 'bool',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "title",
-    "outputs": [
+    inputs: [],
+    name: 'getScholarshipStatus',
+    outputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: 'enum Scholarship.ScholarshipStatus',
+        name: '',
+        type: 'uint8',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "inputs": [],
-    "name": "totalAmount",
-    "outputs": [
+    inputs: [],
+    name: 'getTotalMilestones',
+    outputs: [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    "stateMutability": "payable",
-    "type": "receive"
-  }
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'milestones',
+    outputs: [
+      {
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bool',
+        name: 'isCompleted',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'status',
+    outputs: [
+      {
+        internalType: 'enum Scholarship.ScholarshipStatus',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'studentApplications',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'studentAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'isApproved',
+        type: 'bool',
+      },
+      {
+        internalType: 'uint256',
+        name: 'fundsWithdrawn',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'title',
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalAmount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_newTitle',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: '_newDescription',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: '_newGpa',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: '_newAdditionalRequirements',
+        type: 'string',
+      },
+      {
+        internalType: 'uint256',
+        name: '_newDeadline',
+        type: 'uint256',
+      },
+    ],
+    name: 'updateScholarshipDetails',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    stateMutability: 'payable',
+    type: 'receive',
+  },
 ];
 
 
