@@ -60,7 +60,7 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
       username: "",
       bio: "",
       profileImage: undefined,
-      websiteURL: undefined,
+      websiteURL: "",
       industry: [],
     },
   });
