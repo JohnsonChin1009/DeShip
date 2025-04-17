@@ -6,7 +6,9 @@ interface RoleCardProps {
   role: string;
   description: string;
   image: string;
-  onSelectRole: (role: string) => void; // Function to return the role to the parent
+  onSelectRole: (role: string) => void;
+  isSelected?: boolean;
+  isLocked?: boolean;
 }
 
 export default function RoleCard({
@@ -14,13 +16,28 @@ export default function RoleCard({
   image,
   description,
   onSelectRole,
+  isSelected = false,
+  isLocked = false,
 }: RoleCardProps) {
+  const handleClick = () => {
+    if (!isLocked) {
+      onSelectRole(role);
+    }
+  };
+
   return (
     <div
-      onClick={() => onSelectRole(role)} // Call the function with the selected role
-      className="bg-white w-full lg:w-[500px] xl:w-[600px] border-2 border-gray-200 hover:border-highlight
-                 rounded-2xl flex flex-col hover:-translate-y-2 items-center justify-center text-center p-8
-                 shadow-sm hover:shadow-lg transition-shadow space-y-2 cursor-pointer"
+      onClick={handleClick}
+      className={`w-full lg:w-[500px] xl:w-[600px] rounded-2xl flex flex-col items-center justify-center text-center p-8
+        shadow-sm space-y-2 duration-300
+        ${
+          isSelected
+            ? "bg-blue-100 border-blue-500 border-2"
+            : "bg-white border-2 border-gray-200"
+        }
+        ${!isLocked && !isSelected ? "hover:border-highlight hover:-translate-y-2 hover:shadow-lg cursor-pointer" : ""}
+        ${isLocked ? "cursor-default" : ""}
+      `}
     >
       <div className="relative w-20 h-20 mx-auto">
         <Image
@@ -30,10 +47,10 @@ export default function RoleCard({
           className="object-contain rounded-lg"
         />
       </div>
-      <h3 className="text-xl lg:text-2xl text-black font-bold">{role}</h3>
-      <p className="text-gray-600 font-medium text-sm max-w-xs">
-        {description}
-      </p>
+      <h3 className="text-xl lg:text-2xl text-black font-bold">
+        {isSelected ? `${role} (Selected)` : role}
+      </h3>
+      <p className="text-gray-600 font-medium text-sm max-w-xs">{description}</p>
     </div>
   );
 }
