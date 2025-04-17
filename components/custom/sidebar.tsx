@@ -1,22 +1,14 @@
 "use client";
 
-import {
-  BarChart3,
-  BookOpen,
-  Compass,
-  GraduationCap,
-  LayoutDashboard,
-  MessageSquare,
-  PanelLeftClose,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { BarChart3, BookOpen, Compass, GraduationCap, LayoutDashboard, MessageSquare, PanelLeftClose, Users, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PrivyButton from "@/components/custom/PrivyButton";
 
 interface SidebarProps {
+  username: string;
+  profileImage: string;
   role: string;
   isOpen: boolean;
   setIsOpen?: (isOpen: boolean) => void;
@@ -24,13 +16,7 @@ interface SidebarProps {
   setSelectedTab: (tab: string) => void;
 }
 
-export default function Sidebar({
-  role,
-  isOpen,
-  setIsOpen,
-  selectedTab,
-  setSelectedTab,
-}: SidebarProps) {
+export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelectedTab, username, profileImage}: SidebarProps) {
   const toggleSidebar = () => {
     if (setIsOpen) {
       setIsOpen(!isOpen);
@@ -67,15 +53,15 @@ export default function Sidebar({
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src="https://avatars.githubusercontent.com/u/107231772?v=4"
-                alt="Johnson's Image"
+                src={profileImage}
+                alt={`${username}'s profile image`}
               />
-              <AvatarFallback>Johnson Chin</AvatarFallback>
+              <AvatarFallback>{username}</AvatarFallback>
             </Avatar>
             {isOpen && (
               <div>
-                <h2 className="font-semibold truncate max-w-20">
-                  0x_JohnsonChin
+                <h2 className="font-semibold text-sm truncate max-w-28">
+                  {username}
                 </h2>
               </div>
             )}
