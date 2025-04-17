@@ -8,6 +8,28 @@ export default function DashboardPage() {
     const [selectedTab, setSelectedTab] = useState<string>("dashboard");
     const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // NEW
 
+
+    async function fetchUserData() {
+        const userData = await fetch("/api/getUserData", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                walletAddress: localStorage.getItem("walletAddress"),
+                role: localStorage.getItem("userRole")
+            })
+        })
+
+        if (!userData.ok) {
+            console.error("Error fetching user data");
+            return;
+        }
+
+        const userdata = await userData.json();
+        console.log("User Data:", userdata);
+    }
+
     // To set the user's role from localStorage
     useEffect(() => {
         const userRole = localStorage.getItem("userRole");
@@ -17,6 +39,8 @@ export default function DashboardPage() {
         }
 
         setRole(userRole);
+
+        fetchUserData();
     }, [])
 
     useEffect(() => {

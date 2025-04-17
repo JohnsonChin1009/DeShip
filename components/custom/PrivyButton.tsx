@@ -45,6 +45,7 @@ export default function PrivyButton() {
 
           const role = await contract.getUserRole(user.wallet.address);
           localStorage.setItem("userRole", role);
+          localStorage.setItem("walletAddress", user.wallet.address);
           router.replace("/dashboard");
           } catch (error) {
             console.error("Error during login with Privy:", error);
