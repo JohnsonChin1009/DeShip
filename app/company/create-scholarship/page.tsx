@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileInput } from '@/components/ui/file-input';
-import Sidebar from '@/components/custom/sidebar';
-import { Header } from '@/components/custom/header';
+import Sidebar from '@/components/custom/Sidebar';
+import { Header } from '@/components/custom/Header';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: "Scholarship name must be at least 3 characters" }),

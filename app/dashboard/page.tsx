@@ -2,18 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
-import Sidebar from "@/components/custom/sidebar";
+import Header from "@/components/custom/Header";
+import Sidebar from "@/components/custom/Sidebar";
 
 export default function DashboardPage() {
   const [role, setRole] = useState<string>("");
-  const {user, loading} = useUser();
+  const { user, loading } = useUser();
   const [selectedTab, setSelectedTab] = useState<string>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
-  // To set the user's role from localStorage
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   useEffect(() => {
     const userRole = localStorage.getItem("userRole");
-
     if (userRole) {
       setRole(userRole);
     }
@@ -46,35 +49,42 @@ export default function DashboardPage() {
         profileImage={user?.avatar_url || ""}
         role={role}
         isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
+        setIsOpen={toggleSidebar}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
-      {role === "Student" ? (
-        <StudentDashboard />
-      ) : role === "Company" ? (
-        <CompanyDashboard />
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <p>Loading dashboard...</p> {/* Placeholder UI */}
+      
+      {/* Main content area that adapts to sidebar */}
+      <div className="flex flex-col flex-1">
+        <Header selectedTab={selectedTab} sidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className="flex-1 p-6 bg-[#F0EBE3]">
+          {role === "Student" ? (
+            <StudentDashboard />
+          ) : role === "Company" ? (
+            <CompanyDashboard />
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <p>Loading dashboard...</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </main>
   );
 }
 
 const StudentDashboard = () => {
   return (
-    <main className="bg-[#F0EBE3] min-w-full flex flex-col gap-3">
+    <div className="flex flex-col gap-3">
       Student Dashboard
-    </main>
+    </div>
   );
 };
 
 const CompanyDashboard = () => {
   return (
-    <main className="bg-[#F0EBE3] min-w-full flex flex-col gap-3">
+    <div className="flex flex-col gap-3">
       Company Dashboard
-    </main>
+    </div>
   );
 };

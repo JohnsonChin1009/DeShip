@@ -1,6 +1,6 @@
 "use client";
 
-import { Header } from "@/components/custom/header";
+import { Header } from "@/components/custom/Header";
 
 export default function ProfilePage() {
     return (

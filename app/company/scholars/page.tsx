@@ -10,8 +10,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import Sidebar from '@/components/custom/sidebar';
-import { Header } from "@/components/custom/header";
+import Sidebar from '@/components/custom/Sidebar';
+import { Header } from "@/components/custom/Header";
 import { Eye, Search } from "lucide-react";
 import { ethers } from "ethers";
 import { scholarshipFactory_ABI, scholarshipFactory_CA, scholarship_ABI } from "@/lib/contractABI";

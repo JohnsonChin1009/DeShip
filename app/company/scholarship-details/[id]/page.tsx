@@ -14,8 +14,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import Sidebar from '@/components/custom/sidebar';
-import { Header } from "@/components/custom/header";
+import Sidebar from '@/components/custom/Sidebar';
+import { Header } from "@/components/custom/Header";
 import { ethers } from "ethers";
 import { scholarship_ABI } from "@/lib/contractABI";
 import { ScholarshipEditDialog } from "@/components/custom/ScholarshipEditDialog";

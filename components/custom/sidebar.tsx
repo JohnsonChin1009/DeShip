@@ -43,12 +43,12 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
 
   return (
     <aside
-      className={`fixed left-0 top-0 z-40 h-screen ${
-        isOpen ? "w-64" : "w-0"
-      } border-r bg-card transition-all overflow-hidden`}
+    className={`h-screen transition-all border-r bg-card overflow-hidden ${
+      isOpen ? "w-64" : "w-0"
+    }`}
     >
       <div className="flex h-full flex-col">
-        {/* Company Info with Toggle Button */}
+        {/* Company Image, Info with Toggle Button */}
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
