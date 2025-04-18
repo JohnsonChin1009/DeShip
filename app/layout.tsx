@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import Providers from "./providers";
+import { UserProvider } from "@/context/UserContext";
 import "./globals.css";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -25,8 +26,10 @@ export default function RootLayout({
         className={`${jetBrainsMono.className} antialiased`}
       >
         <Providers>
+          <UserProvider>
           {children}
           <Toaster />
+          </UserProvider>
         </Providers>
       </body>
     </html>
