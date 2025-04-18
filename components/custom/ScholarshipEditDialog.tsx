@@ -150,11 +150,13 @@ export function ScholarshipEditDialog({
         
         toast({
           title: updateSuccess ? 'Success' : 'Warning',
-          description: updateSuccess 
-            ? 'Scholarship details updated successfully!' 
+          description: updateSuccess
+            ? 'Scholarship details updated successfully!'
             : 'Transaction completed but there was an issue refreshing the data. You may need to reload the page.',
           variant: updateSuccess ? 'default' : 'destructive',
-          className: updateSuccess ? 'border-l-4 border-green-500' : '',
+          className: updateSuccess
+            ? 'border-l-4 border-green-500 top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4'
+            : '',
         });
       }
     } catch (error) {
