@@ -56,7 +56,7 @@ export default function DashboardPage() {
       
       {/* Main content area that adapts to sidebar */}
       <div className="flex flex-col flex-1">
-        <Header selectedTab={selectedTab} sidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Header role={role} selectedTab={selectedTab} sidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="flex-1 p-6 bg-[#F0EBE3]">
           {role === "Student" ? (
             <StudentDashboard />
