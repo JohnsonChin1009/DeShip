@@ -42,7 +42,7 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen flex">
       <Sidebar
-        username={user?.username || "Anonymous"}
+        username={user?.username || "Steve"}
         profileImage={user?.avatar_url || ""}
         role={role}
         isOpen={isSidebarOpen}

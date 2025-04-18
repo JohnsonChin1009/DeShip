@@ -26,6 +26,8 @@ export default function PrivyButton() {
 
     setDropdownOpen(false);
     localStorage.removeItem("userRole");
+    localStorage.removeItem("walletAddress");
+    localStorage.removeItem("userData");
     router.refresh();
   }
 
