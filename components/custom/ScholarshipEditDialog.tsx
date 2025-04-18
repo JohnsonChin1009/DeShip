@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ethers } from "ethers";
-import { toast } from "react-hot-toast";
+import { useToast } from "@/hooks/use-toast";
 
 //to solve eslint error when using contract ABI prop (john)
 interface ScholarshipContractABI {
@@ -57,7 +57,7 @@ interface ScholarshipEditDialogProps {
     deadline: Date;
   };
   contractABI: ScholarshipContractABI[];
-  onUpdate: () => Promise<void>;
+  onUpdate: () => Promise<boolean | void>;
 }
 
 
@@ -69,6 +69,7 @@ export function ScholarshipEditDialog({
 }: ScholarshipEditDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -142,25 +143,40 @@ export function ScholarshipEditDialog({
         // Wait for transaction to be mined
         await tx.wait();
         
-        // Refresh scholarship details
-        await onUpdate();
-        
-        // Close the dialog and show success message
         setIsOpen(false);
-        toast.success("Scholarship details updated successfully!");
+        
+        // Refresh scholarship details
+        const updateSuccess = await onUpdate();
+        
+        toast({
+          title: updateSuccess ? 'Success' : 'Warning',
+          description: updateSuccess 
+            ? 'Scholarship details updated successfully!' 
+            : 'Transaction completed but there was an issue refreshing the data. You may need to reload the page.',
+          variant: updateSuccess ? 'default' : 'destructive',
+          className: updateSuccess ? 'border-l-4 border-green-500' : '',
+        });
       }
     } catch (error) {
       console.error("Error updating scholarship details:", error);
-      toast.error("Failed to update scholarship details. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to update scholarship details. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsUpdating(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!isUpdating || !open) {
+        setIsOpen(open);
+      }
+    }}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" type="button">
           <Pencil className="w-4 h-4 mr-1" /> Edit
         </Button>
       </DialogTrigger>
@@ -171,76 +187,81 @@ export function ScholarshipEditDialog({
             Update the details of your scholarship. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleUpdateScholarship}>
-          <div className="grid gap-6 py-4">
+        <div className="grid gap-6 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows={4}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="gpa">Minimum GPA</Label>
               <Input
-                id="title"
-                name="title"
-                value={formData.title}
+                id="gpa"
+                name="gpa"
+                type="number"
+                min="0"
+                max="4.0"
+                step="0.1"
+                value={formData.gpa}
                 onChange={handleInputChange}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
+              <Label htmlFor="deadline">Application Deadline</Label>
+              <Input
+                id="deadline"
+                name="deadline"
+                type="date"
+                value={formData.deadline}
                 onChange={handleInputChange}
-                rows={4}
                 required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="gpa">Minimum GPA</Label>
-                <Input
-                  id="gpa"
-                  name="gpa"
-                  type="number"
-                  min="0"
-                  max="4.0"
-                  step="0.1"
-                  value={formData.gpa}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="deadline">Application Deadline</Label>
-                <Input
-                  id="deadline"
-                  name="deadline"
-                  type="date"
-                  value={formData.deadline}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="additionalRequirements">Additional Requirements</Label>
-              <Textarea
-                id="additionalRequirements"
-                name="additionalRequirements"
-                value={formData.additionalRequirements}
-                onChange={handleInputChange}
-                rows={2}
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)} type="button">
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isUpdating}>
-              {isUpdating ? "Updating..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </form>
+          <div className="grid gap-2">
+            <Label htmlFor="additionalRequirements">Additional Requirements</Label>
+            <Textarea
+              id="additionalRequirements"
+              name="additionalRequirements"
+              value={formData.additionalRequirements}
+              onChange={handleInputChange}
+              rows={2}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)} type="button">
+            Cancel
+          </Button>
+          <Button 
+            onClick={(e) => {
+              e.preventDefault();
+              handleUpdateScholarship(e);
+            }} 
+            disabled={isUpdating}
+            type="button"
+          >
+            {isUpdating ? "Updating..." : "Save Changes"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -19,6 +19,7 @@ import { Header } from "@/components/custom/header";
 import { ethers } from "ethers";
 import { scholarship_ABI } from "@/lib/contractABI";
 import { ScholarshipEditDialog } from "@/components/custom/ScholarshipEditDialog";
+import React from "react";
 
 const statusMapping = ["Open", "In Progress", "Closed", "Completed"];
 
@@ -36,18 +37,7 @@ export default function ScholarshipDetailsPage() {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole) {
-      setRole(userRole);
-    }
-    
-    if (id) {
-      fetchScholarshipDetails();
-    }
-  }, [id]);
-
-  const fetchScholarshipDetails = async () => {
+  const fetchScholarshipDetails = React.useCallback(async () => {
     setLoading(true);
     try {
       if (typeof window.ethereum !== 'undefined') {
@@ -120,6 +110,78 @@ export default function ScholarshipDetailsPage() {
     } finally {
       setLoading(false);
     }
+  }, [id, applicants.length, approvedStudents.length]); 
+
+  useEffect(() => {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole) {
+      setRole(userRole);
+    }
+    
+    if (id) {
+      fetchScholarshipDetails();
+    }
+  }, [id, fetchScholarshipDetails]);
+
+  // To update scholarship data without causing a page reload
+  const updateScholarshipData = async () => {
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        
+        const scholarshipContract = new ethers.Contract(
+          id as string,
+          scholarship_ABI,
+          provider
+        );
+        
+        const title = await scholarshipContract.title();
+        const description = await scholarshipContract.description();
+        const totalAmount = await scholarshipContract.totalAmount();
+        const deadline = await scholarshipContract.deadline();
+        const status = await scholarshipContract.status();
+        const company = await scholarshipContract.company();
+        const eligibility = await scholarshipContract.eligibility();
+        const balance = await scholarshipContract.getContractBalance();
+        
+        const totalMilestones = await scholarshipContract.getTotalMilestones();
+        const milestonesPromises = [];
+        
+        for (let i = 0; i < Number(totalMilestones); i++) {
+          milestonesPromises.push(scholarshipContract.getMilestone(i));
+        }
+        
+        const milestonesData = await Promise.all(milestonesPromises);
+        const formattedMilestones = milestonesData.map((milestone, index) => ({
+          id: index,
+          title: milestone.titleReturn,
+          amount: ethers.formatEther(milestone.amount),
+          isCompleted: milestone.isCompleted
+        }));
+        
+        setMilestones(formattedMilestones);
+        
+        // Update the scholarship data state
+        setScholarship((prev: any) => ({
+          ...prev,
+          title: title,
+          description: description,
+          amount: ethers.formatEther(totalAmount),
+          deadline: new Date(Number(deadline) * 1000),
+          status: statusMapping[Number(status)],
+          company: company,
+          gpa: Number(eligibility.gpa) / 100,
+          additionalRequirements: eligibility.additionalRequirements,
+          remainingBalance: ethers.formatEther(balance)
+        }));
+        
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error updating scholarship data:", error);
+      return false;
+    }
   };
 
   if (loading) {
@@ -142,6 +204,8 @@ export default function ScholarshipDetailsPage() {
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar
+        profileImage="/images/placeholder.png"
+        username="Company Name"
         role={role}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
@@ -177,7 +241,7 @@ export default function ScholarshipDetailsPage() {
                 deadline: scholarship.deadline
               }}
               contractABI={scholarship_ABI}
-              onUpdate={fetchScholarshipDetails}
+              onUpdate={updateScholarshipData}
             />
             <Button variant="destructive" size="sm">
               <Trash2 className="w-4 h-4 mr-1" /> Delete
