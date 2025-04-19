@@ -46,7 +46,7 @@ export default function Header({selectedTab, sidebarOpen = true, toggleSidebar, 
   )
 }
 
-function CompanyHeader() {
+const CompanyHeader = () => {
   return (
     <>
       <Button variant="outline" className="gap-2">
@@ -76,7 +76,7 @@ function CompanyHeader() {
   )
 }
 
-function StudentHeader() {
+const StudentHeader = () => {
   return (
     <>
     <div>
