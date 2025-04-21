@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, BookOpen, Compass, GraduationCap, LayoutDashboard, MessageSquare, PanelLeftClose, Users, Wallet } from "lucide-react";
+import { BarChart3, BookOpen, Compass, GraduationCap, LayoutDashboard, MessageSquare, PanelLeftClose, Users, Wallet, User  } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,11 +31,13 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
     { key: "wallet", icon: Wallet, label: "Wallet" },
     { key: "analytics", icon: BarChart3, label: "Analytics" },
     { key: "messages", icon: MessageSquare, label: "Messages" },
+    { key: "profile", icon: User, label: "Profile" },
   ];
 
   const studentNavTabs = [
     { key: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { key: "discover", icon: Compass, label: "Discover" },
+    { key: "profile", icon: User, label: "Profile" },
   ];
 
   // Use the appropriate tabs based on the role
@@ -73,7 +75,7 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
 
         {/* Navigation Tabs */}
         <ScrollArea className="flex-1 px-3 py-4">
-          <nav className="space-y-1">
+          <nav className="space-y-2">
             {tabs.map((item) => {
               const isActive = selectedTab === item.key;
               console.log("isActive", isActive);
@@ -81,7 +83,7 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
                 <Button
                   key={item.key}
                   variant={isActive ? "default" : "ghost"}
-                  className="w-full justify-start"
+                  className="w-full justify-start text-md"
                   onClick={() => setSelectedTab(item.key)}
                 >
                   <item.icon className="mr-3 h-4 w-4" />

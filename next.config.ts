@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "media1.tenor.com",
         port: "",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        port: "",
+      },
     ]
   }
 };

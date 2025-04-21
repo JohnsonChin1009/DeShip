@@ -11,6 +11,9 @@ interface UserProfile {
   description: string;
   avatar_url?: string;
   role: Role;
+  academic_progression?: string;
+  field_of_study?: string;
+  portfolio_url?: string;
 }
 
 interface UserContextType {

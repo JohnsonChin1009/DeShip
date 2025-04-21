@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
 import Header from "@/components/custom/Header";
+import Dashboard from "@/components/custom/Dashboard";
+import Profile from "@/components/custom/ProfileSection";
 import Sidebar from "@/components/custom/Sidebar";
 
 export default function DashboardPage() {
@@ -21,10 +23,6 @@ export default function DashboardPage() {
       setRole(userRole);
     }
   }, []);
-
-  useEffect(() => {
-    console.log("Selected Tab:", selectedTab);
-  }, [selectedTab]);
 
   if (loading) {
     return (
@@ -59,9 +57,9 @@ export default function DashboardPage() {
         <Header role={role} selectedTab={selectedTab} sidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="flex-1 p-6 bg-[#F0EBE3]">
           {role === "Student" ? (
-            <StudentDashboard />
+            <StudentSection selectedTab={selectedTab}/>
           ) : role === "Company" ? (
-            <CompanyDashboard />
+            <CompanySection />
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <p>Loading dashboard...</p>
@@ -73,15 +71,28 @@ export default function DashboardPage() {
   );
 }
 
-const StudentDashboard = () => {
+type SectionProps = {
+  selectedTab: string;
+};
+
+const StudentSection = ({ selectedTab }: SectionProps) => {
+  const role = localStorage.getItem("userRole");
+
+  if (!role) {
+    console.error("Role not found in localStorage");
+    return null;
+  }
+
   return (
     <div className="flex flex-col gap-3">
-      Student Dashboard
+      {selectedTab === "dashboard" && <Dashboard role={role} />}
+      {selectedTab === "profile" && <Profile />}
+      {/* Add more sections as needed */}
     </div>
   );
 };
 
-const CompanyDashboard = () => {
+const CompanySection = () => {
   return (
     <div className="flex flex-col gap-3">
       Company Dashboard
