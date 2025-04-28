@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/getUserData", {
+        const res = await fetch("/api/fetchUserData", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ walletAddress: localStorage.getItem("walletAddress"), role: localStorage.getItem("userRole")}),
