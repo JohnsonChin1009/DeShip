@@ -5,7 +5,9 @@ import { useUser } from "@/context/UserContext";
 import Header from "@/components/custom/Header";
 import Dashboard from "@/components/custom/Dashboard";
 import Profile from "@/components/custom/ProfileSection";
+import DiscoverScholarshipsSection from "@/components/custom/DiscoverScholarshipsSection";
 import Sidebar from "@/components/custom/Sidebar";
+import PrivyButton from "@/components/custom/PrivyButton";
 
 export default function DashboardPage() {
   const [role, setRole] = useState<string>("");
@@ -36,6 +38,7 @@ export default function DashboardPage() {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <p>User not authenticated</p>
+        <PrivyButton />
       </main>
     );
   }
@@ -86,6 +89,7 @@ const StudentSection = ({ selectedTab }: SectionProps) => {
   return (
     <div className="flex flex-col gap-3">
       {selectedTab === "dashboard" && <Dashboard role={role} />}
+      {selectedTab === "discover" && <DiscoverScholarshipsSection />}
       {selectedTab === "profile" && <Profile />}
       {/* Add more sections as needed */}
     </div>
