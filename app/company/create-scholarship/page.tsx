@@ -15,8 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileInput } from '@/components/ui/file-input';
-import Sidebar from '@/components/custom/Sidebar';
-import { Header } from '@/components/custom/Header';
+import Header from "@/components/custom/header";
+import Sidebar from '@/components/custom/sidebar';
+import { useUser } from "@/context/UserContext";
 
 const formSchema = z.object({
   title: z.string().min(3, { message: "Scholarship name must be at least 3 characters" }),
@@ -47,16 +48,7 @@ export default function CreateScholarshipPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [role, setRole] = useState<string>('');
   const [selectedTab, setSelectedTab] = useState<string>('dashboard');
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  // const company = {
-  //   name: "TechCorp",
-  //   logo: "/images/techcorp-logo.png",
-  //   industry: "Technology",
-  // };
+  const { user } = useUser();
 
   // To set the user's role from localStorage
   useEffect(() => {
@@ -162,8 +154,10 @@ export default function CreateScholarshipPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen">
       <Sidebar
+        username={user?.username || ""}
+        profileImage={user?.avatar_url || ""}
         role={role}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
@@ -171,24 +165,23 @@ export default function CreateScholarshipPage() {
         setSelectedTab={setSelectedTab}
       />
 
-      <main
-        className={`${
-          sidebarOpen ? 'ml-64' : 'ml-0'
-        } min-h-screen bg-background transition-all`}
-      >
-        <Header
-          title="Create Scholarship"
-          sidebarOpen={sidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
+      {/* Main content area */}
+      <div className={`flex-1 ${sidebarOpen ? 'ml-6' : 'ml-0'} transition-all`}>
+        <div className="p-6 bg-[#F0EBE3]">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Create Scholarship</h1>
+            <Button variant="outline" asChild>
+              <Link href="/company/dashboard">Cancel</Link>
+            </Button>
+          </div>
 
-        <div className="p-6">
           <Card>
             <CardHeader>
-              <CardTitle>Scholarship Details</CardTitle>
+              <CardTitle>
+                Scholarship Details
+              </CardTitle>
               <CardDescription>
-                Create a new scholarship program for students. Fill in all the
-                required information below.
+                Create a new scholarship program for students. Fill in all the required information below.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -212,9 +205,9 @@ export default function CreateScholarshipPage() {
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>
+                          {/* <FormDescription>
                             The name of your scholarship program.
-                          </FormDescription>
+                          </FormDescription> */}
                           <FormMessage />
                         </FormItem>
                       )}
@@ -233,10 +226,10 @@ export default function CreateScholarshipPage() {
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>
+                          {/* <FormDescription>
                             Provide a detailed description of the scholarship
                             program.
-                          </FormDescription>
+                          </FormDescription> */}
                           <FormMessage />
                         </FormItem>
                       )}
@@ -468,9 +461,6 @@ export default function CreateScholarshipPage() {
                   </div>
 
                   <div className="flex justify-end space-x-4">
-                    <Button variant="outline" type="button" asChild>
-                      <Link href="/company/dashboard">Cancel</Link>
-                    </Button>
                     <Button type="submit">Create Scholarship</Button>
                   </div>
                 </form>
@@ -478,7 +468,7 @@ export default function CreateScholarshipPage() {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

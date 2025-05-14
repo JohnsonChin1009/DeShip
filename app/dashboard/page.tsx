@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@/context/UserContext";
-import Header from "@/components/custom/Header";
+import Header from "@/components/custom/header";
 import Dashboard from "@/components/custom/Dashboard";
 import Profile from "@/components/custom/ProfileSection";
 import DiscoverScholarshipsSection from "@/components/custom/DiscoverScholarshipsSection";
-import Sidebar from "@/components/custom/Sidebar";
+import Sidebar from "@/components/custom/sidebar";
 import PrivyButton from "@/components/custom/PrivyButton";
 import { format } from 'date-fns';
 import {
