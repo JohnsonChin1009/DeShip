@@ -33,6 +33,8 @@ export async function POST(request: NextRequest) {
 
         if (role === "Company") {
             const { data: companyData, error: companyError } = await supabase.from("company_profiles").select("*").eq("wallet_address", walletAddress).single();
+            console.log("Company data:", companyData);
+            console.log("Company that has log in: ", walletAddress);
 
             if (companyError || !companyData) {
                 return NextResponse.json({ error: "Company profile not found" }, { status: 404 });
