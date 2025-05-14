@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, BookOpen, Compass, GraduationCap, LayoutDashboard, MessageSquare, PanelLeftClose, Users, Wallet, User  } from "lucide-react";
+import { BookOpen, Compass, GraduationCap, LayoutDashboard, PanelLeftClose, Users, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,7 +16,7 @@ interface SidebarProps {
   setSelectedTab: (tab: string) => void;
 }
 
-export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelectedTab, username, profileImage}: SidebarProps) {
+export default function Sidebar({ role, isOpen, setIsOpen, selectedTab, setSelectedTab, username, profileImage }: SidebarProps) {
   const toggleSidebar = () => {
     if (setIsOpen) {
       setIsOpen(!isOpen);
@@ -28,9 +28,6 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
     { key: "scholars", icon: GraduationCap, label: "Scholars" },
     { key: "programs", icon: BookOpen, label: "Programs" },
     { key: "applications", icon: Users, label: "Applications" },
-    { key: "wallet", icon: Wallet, label: "Wallet" },
-    { key: "analytics", icon: BarChart3, label: "Analytics" },
-    { key: "messages", icon: MessageSquare, label: "Messages" },
     { key: "profile", icon: User, label: "Profile" },
   ];
 
@@ -45,9 +42,8 @@ export default function Sidebar({role, isOpen, setIsOpen, selectedTab, setSelect
 
   return (
     <aside
-    className={`h-screen transition-all border-r bg-card overflow-hidden ${
-      isOpen ? "w-64" : "w-0"
-    }`}
+      className={`h-screen transition-all border-r bg-card overflow-hidden ${isOpen ? "w-64" : "w-0"
+        }`}
     >
       <div className="flex h-full flex-col">
         {/* Company Image, Info with Toggle Button */}
