@@ -8,6 +8,7 @@ import Profile from "@/components/custom/ProfileSection";
 import DiscoverScholarshipsSection from "@/components/custom/DiscoverScholarshipsSection";
 import ScholarshipListing from "@/components/custom/ScholarshipListing";
 import ApplicationListingSection from "@/components/custom/ApplicationListingSection";
+import CompanyProfileSection from "@/components/custom/CompanyProfileSection";
 import Sidebar from "@/components/custom/sidebar";
 import PrivyButton from "@/components/custom/PrivyButton";
 import { format } from 'date-fns';
@@ -339,7 +340,7 @@ const CompanySection = ({ selectedTab }: SectionProps) => {
     <div className="flex flex-col gap-3">
       {selectedTab === "scholars" && <ScholarshipListing />}
       {selectedTab === "applications" && <ApplicationListingSection />}
-      {selectedTab === "profile" && <Profile />}
+      {selectedTab === "profile" && <CompanyProfileSection />}
       {/* Add more company-specific tab views here if needed */}
     </div>
   );

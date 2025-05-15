@@ -119,7 +119,7 @@ export default function ApplicationListingSection() {
                                                     <td className="border px-4 py-2">{applicant.appliedDate}</td>
                                                     <td className="border px-4 py-2 text-center">
                                                         <Button variant="outline" size="sm" asChild>
-                                                            <Link href={`/applicant-details/${applicant.id}`}>
+                                                            <Link href={`/company/applicant-details/${applicant.id}`}>
                                                                 <Eye className="inline mr-1 w-4 h-4" /> View
                                                             </Link>
                                                         </Button>
