@@ -13,6 +13,7 @@ import {
 import { Eye, Search } from "lucide-react";
 import { ethers } from "ethers";
 import { scholarshipFactory_ABI, scholarshipFactory_CA, scholarship_ABI } from "@/lib/contractABI";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Status mapping for scholarship statuses
 const statusMapping = ["Open", "In Progress", "Closed", "Completed"];
@@ -26,6 +27,63 @@ interface ScholarshipData {
     deadline: string;
     status: string;
 }
+
+// Scholarship Table Skeleton component
+const ScholarshipTableSkeleton = () => {
+    return (
+        <div className="space-y-4">
+            {/* Table Skeleton */}
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-200 min-w-max">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="border border-gray-200 px-4 py-2 text-left">Title</th>
+                            <th className="border border-gray-200 px-4 py-2 text-left">Amount (ETH)</th>
+                            <th className="border border-gray-200 px-4 py-2 text-left">Deadline</th>
+                            <th className="border border-gray-200 px-4 py-2 text-left">Status</th>
+                            <th className="border border-gray-200 px-4 py-2 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Array(5).fill(0).map((_, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                                <td className="border border-gray-200 px-4 py-2">
+                                    <Skeleton className="h-5 w-36" />
+                                </td>
+                                <td className="border border-gray-200 px-4 py-2">
+                                    <Skeleton className="h-5 w-16" />
+                                </td>
+                                <td className="border border-gray-200 px-4 py-2">
+                                    <Skeleton className="h-5 w-24" />
+                                </td>
+                                <td className="border border-gray-200 px-4 py-2">
+                                    <Skeleton className="h-6 w-20 rounded-md" />
+                                </td>
+                                <td className="border border-gray-200 px-4 py-2 text-center">
+                                    <Skeleton className="h-8 w-20 mx-auto" />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination Skeleton */}
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="flex items-center space-x-2">
+                    {Array(3).fill(0).map((_, i) => (
+                        <Skeleton key={i} className="h-8 w-8" />
+                    ))}
+                </div>
+                <Skeleton className="h-4 w-48" />
+                <div className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-8 w-16" />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function ScholarshipListing() {
     // State variables
@@ -138,9 +196,7 @@ export default function ScholarshipListing() {
 
                 <CardContent>
                     {loading ? (
-                        <div className="flex justify-center items-center h-40">
-                            <p>Loading scholarships...</p>
-                        </div>
+                        <ScholarshipTableSkeleton />
                     ) : (
                         <>
                             {/* Responsive Table */}

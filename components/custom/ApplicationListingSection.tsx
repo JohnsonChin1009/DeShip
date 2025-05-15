@@ -13,6 +13,7 @@ import {
 import { Eye, PlusCircle, Search } from "lucide-react";
 import { ethers } from "ethers";
 import { scholarshipFactory_CA, scholarshipFactory_ABI, scholarship_ABI } from "@/lib/contractABI";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Interface for applicant data
 interface ApplicantData {
@@ -28,6 +29,68 @@ interface ScholarshipData {
     address: string;
     title: string;
 }
+
+// Applicants Table Skeleton component
+const ApplicantsTableSkeleton = () => {
+    return (
+        <div className="space-y-4">
+            {/* Scholarship Selector Skeleton */}
+            <div className="flex mb-4">
+                <Skeleton className="h-10 w-64" />
+            </div>
+            
+            {/* Table Skeleton */}
+            <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-200 min-w-max">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="border px-4 py-2 text-left">Username</th>
+                            <th className="border px-4 py-2 text-left">Field of Study</th>
+                            <th className="border px-4 py-2 text-left">Status</th>
+                            <th className="border px-4 py-2 text-left">Funds Withdrawn (ETH)</th>
+                            <th className="border px-2 py-2 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Array(5).fill(0).map((_, index) => (
+                            <tr key={index} className="hover:bg-gray-50">
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-5 w-32" />
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-5 w-40" />
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-6 w-20 rounded-md" />
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-5 w-16" />
+                                </td>
+                                <td className="border px-2 py-2 text-center">
+                                    <Skeleton className="h-8 w-28 mx-auto" />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Pagination Skeleton */}
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="flex items-center space-x-2">
+                    {Array(3).fill(0).map((_, i) => (
+                        <Skeleton key={i} className="h-8 w-8" />
+                    ))}
+                </div>
+                <Skeleton className="h-4 w-48" />
+                <div className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-8 w-16" />
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export default function ApplicationListingSection() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -195,53 +258,56 @@ export default function ApplicationListingSection() {
     return (
         <div className="p-6">
             <Card>
-                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <CardTitle>Scholarship Applicants</CardTitle>
-                        <CardDescription>
-                            View and manage students who applied for your scholarships.
-                        </CardDescription>
-                        {scholarships.length > 0 && (
-                            <div className="mt-5">
+                <CardHeader>
+                    <CardTitle>Scholarship Applicants</CardTitle>
+                    <CardDescription>View and manage applicants for your scholarships</CardDescription>
+
+                    <div className="mt-4 space-y-4">
+                        {/* Scholarship Selection Dropdown */}
+                        {!loading && scholarships.length > 0 && (
+                            <div>
+                                <label htmlFor="scholarship" className="block mb-1 font-medium">
+                                    Select Scholarship:
+                                </label>
                                 <select
+                                    id="scholarship"
                                     value={selectedScholarship}
                                     onChange={(e) => setSelectedScholarship(e.target.value)}
-                                    className="border border-gray-300 rounded px-2 py-1 min-w-[200px]"
+                                    className="w-full md:w-1/2 lg:w-1/3 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
-                                    {scholarships.map((scholarship) => (
-                                        <option key={scholarship.address} value={scholarship.address}>
+                                    {scholarships.map((scholarship, index) => (
+                                        <option key={index} value={scholarship.address}>
                                             {scholarship.title}
                                         </option>
                                     ))}
                                 </select>
                             </div>
                         )}
-                    </div>
-                    
-                    {scholarships.length > 0 && (
-                        <div className="flex flex-col sm:flex-row gap-4 items-center">
-                            <div className="relative w-full max-w-md">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search applicants..."
-                                    value={searchQuery}
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        setCurrentPage(1);
-                                    }}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
+
+                        {/* Search Field - only show when there are applicants to search */}
+                        {scholarships.length > 0 && (
+                            <div className="flex flex-col sm:flex-row gap-4 items-center">
+                                <div className="relative w-full max-w-md">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search applicants..."
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </CardHeader>
 
                 <CardContent>
                     {loading ? (
-                        <div className="flex justify-center items-center h-40">
-                            <p>Loading applicants...</p>
-                        </div>
+                        <ApplicantsTableSkeleton />
                     ) : scholarships.length === 0 ? (
                         <div className="flex flex-col justify-center items-center h-40 space-y-4">
                             <p>You haven't created any scholarships yet.</p>

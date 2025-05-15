@@ -22,6 +22,7 @@ import { weiToEth } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { usePrivy } from "@privy-io/react-auth";
 import Header from '@/components/custom/header';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -93,6 +94,124 @@ interface DashboardData {
   recentTransactions: Transaction[];
   activeScholars: Scholar[];
 }
+
+const DashboardSkeleton = () => {
+  return (
+    <div className="space-y-6">
+      {/* Metrics Cards Skeleton */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                <Skeleton className="h-4 w-24" />
+              </CardTitle>
+              <Skeleton className="h-4 w-4 rounded-full" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                <Skeleton className="h-8 w-16 mb-1" />
+              </div>
+              <Skeleton className="h-3 w-32" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Charts Skeleton */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-5 w-36" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] flex items-center justify-center">
+              <Skeleton className="h-[250px] w-[250px] rounded-full" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-5 w-36" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] flex flex-col justify-between p-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-8 w-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activity Skeleton */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-5 w-40" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div>
+                    <Skeleton className="h-5 w-48 mb-2" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                  <div className="text-right">
+                    <Skeleton className="h-5 w-24 mb-2" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-5 w-36" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <div>
+                        <Skeleton className="h-5 w-32 mb-1" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-8 w-14 rounded-md" />
+                  </div>
+                  <Skeleton className="h-2 w-full" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-10" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
 
 const CompanyDashboard = () => {
     const { user: contextUser } = useUser();
@@ -246,7 +365,7 @@ const CompanyDashboard = () => {
     ] : [];
 
     if (isLoading) {
-      return <div className="flex justify-center items-center min-h-[300px]">Loading dashboard data...</div>;
+      return <DashboardSkeleton />;
     }
 
     if (error) {
