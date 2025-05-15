@@ -30,11 +30,6 @@ export default function HomePage() {
                   A decentralized platform revolutionizing scholarship applications through blockchain technology and zero-knowledge proofs.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-6">
-                <button className="px-8 py-4 bg-highlight text-white rounded-xl font-bold text-lg hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                  Learn More
-                </button>
-              </div>
             </div>
           </div>
         </section>

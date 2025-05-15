@@ -40,5 +40,26 @@ export const techStackData = [
         image: "/Pinata.avif",
         description: "Decentralized storage solution for storing and retrieving files, with Pinata IPFS providing reliable pinning services.",
         category: "Storage"
+    },
+    {
+        id: "07",
+        title: "Node.js",
+        image: "/Node.js.png",
+        description: "JavaScript runtime built on Chrome's V8 engine, used for building scalable backend services and APIs.",
+        category: "Backend"
+    },
+    {
+        id: "08",
+        title: "Privy",
+        image: "/Privy.avif",
+        description: "User authentication and data management solution designed for Web3 applications with a focus on privacy.",
+        category: "Authentication"
+    },
+    {
+        id: "09",
+        title: "Vercel",
+        image: "/Vercel.png",
+        description: "Cloud platform for deploying frontend applications, optimized for performance, scalability, and developer experience.",
+        category: "Deployment"
     }
 ]
