@@ -23,8 +23,8 @@ export default function ProfileSection() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userAny = user as any;
 
-    const avatarUrl = user.avatar_url?.startsWith("http")
-        ? user.avatar_url
+    const avatarUrl = user.avatar_url
+        ? `https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//${user.avatar_url}.png`
         : "https://avatars.githubusercontent.com/u/107231772?v=4";
 
     return (
