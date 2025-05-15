@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,6 +21,7 @@ import { Progress } from '@/components/ui/progress';
 import { weiToEth } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { usePrivy } from "@privy-io/react-auth";
+import Header from '@/components/custom/header';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -105,70 +106,76 @@ const CompanyDashboard = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      const fetchDashboardData = async () => {
-        try {
-          if (!privyReady) {
-            // Wait for Privy to be ready
-            return;
-          }
-
-          // Get wallet address from Privy, user context, or localStorage as fallback
-          let walletAddress;
-          
-          // First priority: Privy authenticated wallet
-          if (authenticated && privyUser?.wallet?.address) {
-            walletAddress = privyUser.wallet.address;
-            console.log("Using Privy wallet address:", walletAddress);
-          } 
-          // Second priority: User context
-          else if (contextUser?.wallet_address) {
-            walletAddress = contextUser.wallet_address;
-            console.log("Using context wallet address:", walletAddress);
-          } 
-          // Last resort: Try localStorage
-          else {
-            try {
-              walletAddress = typeof window !== 'undefined' ? localStorage.getItem("walletAddress") : null;
-              console.log("Using localStorage wallet address:", walletAddress);
-            } catch (error) {
-              console.error("Error accessing localStorage:", error);
-            }
-          }
-          
-          if (!walletAddress) {
-            console.warn('No wallet address found');
-            setError("No wallet address found. Please connect your wallet.");
-            setIsLoading(false);
-            return;
-          }
-          
-          const response = await fetch('/api/fetchCompanyDashboard', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              companyAddress: walletAddress,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch dashboard data');
-          }
-
-          const data = await response.json();
-          setDashboardData(data);
-        } catch (err) {
-          setError((err as Error).message);
-          console.error('Error fetching dashboard data:', err);
-        } finally {
-          setIsLoading(false);
+    // Move the fetchDashboardData function outside useEffect
+    const fetchDashboardData = useCallback(async () => {
+      try {
+        if (!privyReady) {
+          // Wait for Privy to be ready
+          return;
         }
-      };
 
-      fetchDashboardData();
+        setIsLoading(true);
+        
+        // Get wallet address from Privy, user context, or localStorage as fallback
+        let walletAddress;
+        
+        // First priority: Privy authenticated wallet
+        if (authenticated && privyUser?.wallet?.address) {
+          walletAddress = privyUser.wallet.address;
+          console.log("Using Privy wallet address:", walletAddress);
+        } 
+        // Second priority: User context
+        else if (contextUser?.wallet_address) {
+          walletAddress = contextUser.wallet_address;
+          console.log("Using context wallet address:", walletAddress);
+        } 
+        // Last resort: Try localStorage
+        else {
+          try {
+            walletAddress = typeof window !== 'undefined' ? localStorage.getItem("walletAddress") : null;
+            console.log("Using localStorage wallet address:", walletAddress);
+          } catch (error) {
+            console.error("Error accessing localStorage:", error);
+          }
+        }
+        
+        if (!walletAddress) {
+          console.warn('No wallet address found');
+          setError("No wallet address found. Please connect your wallet.");
+          setIsLoading(false);
+          return;
+        }
+        
+        const response = await fetch('/api/fetchCompanyDashboard', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            companyAddress: walletAddress,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard data');
+        }
+
+        const data = await response.json();
+        setDashboardData(data);
+        setError(null);
+        return true;
+      } catch (err) {
+        setError((err as Error).message);
+        console.error('Error fetching dashboard data:', err);
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
     }, [contextUser, privyUser, privyReady, authenticated]);
+
+    useEffect(() => {
+      fetchDashboardData();
+    }, [fetchDashboardData]);
 
     // Prepare funding distribution data for pie chart
     const fundingDistributionData = dashboardData.company ? [

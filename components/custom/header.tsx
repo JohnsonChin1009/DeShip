@@ -5,6 +5,7 @@ import { Bell, ChevronDown, Globe2, Plus, PanelRightClose } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
+import { ScholarshipCreateDialog } from "./ScholarshipCreateDialog";
 
 interface HeaderProps {
   selectedTab: string;
@@ -15,6 +16,7 @@ interface HeaderProps {
   showCreateButton?: boolean;
   createButtonLink?: string;
   createButtonText?: string;
+  onRefreshDashboard?: () => Promise<boolean | void>;
 }
 
 export default function Header({
@@ -25,7 +27,8 @@ export default function Header({
   title,
   showCreateButton,
   createButtonLink,
-  createButtonText
+  createButtonText,
+  onRefreshDashboard
 }: HeaderProps) {
   const [currentTab, setCurrentTab] = useState(selectedTab);
 
@@ -33,7 +36,9 @@ export default function Header({
     setCurrentTab(selectedTab.toUpperCase());
   }, [selectedTab]);
 
-  const rightArea = role === "Company" ? CompanyHeader({ createButtonLink }) : StudentHeader();
+  const rightArea = role === "Company" ? 
+    CompanyHeader({ createButtonLink, onRefreshDashboard }) : 
+    StudentHeader();
 
   return (
     <>
@@ -61,17 +66,13 @@ export default function Header({
 
 interface CompanyHeaderProps {
   createButtonLink?: string;
+  onRefreshDashboard?: () => Promise<boolean | void>;
 }
 
-const CompanyHeader = ({ createButtonLink = "/company/create-scholarship" }: CompanyHeaderProps) => {
+const CompanyHeader = ({ createButtonLink = "/company/create-scholarship", onRefreshDashboard }: CompanyHeaderProps) => {
   return (
     <>
-      <Button variant="outline" className="gap-2" asChild>
-        <Link href={createButtonLink}>
-          <Plus className="h-4 w-4"/>
-          Create Scholarship
-        </Link>
-      </Button>
+      <ScholarshipCreateDialog onSuccess={onRefreshDashboard} />
 
       <div>
         <Button variant="ghost" size="icon">
