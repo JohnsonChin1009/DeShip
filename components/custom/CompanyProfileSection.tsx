@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
     Card,
     CardHeader,
@@ -11,12 +10,12 @@ import {
     CardDescription,
     CardContent,
 } from "@/components/ui/card";
-import { Building2, Link, Wallet, Pencil } from "lucide-react";
+import { Building2, Link, Wallet } from "lucide-react";
+import { CompanyProfileEditDialog } from "@/components/custom/CompanyProfileEditDialog";
 
 export default function ProfileSection() {
-    const { user } = useUser();
-    const router = useRouter();
-
+    const { user, refetchUserData } = useUser();
+    const [editOpen, setEditOpen] = useState(false);
 
     if (!user) return <div className="p-6">Loading company profile...</div>;
 
@@ -38,13 +37,25 @@ export default function ProfileSection() {
                             View your registered company details.
                         </CardDescription>
                     </div>
-                    <Button
-                        onClick={() => router.push("/edit-profile")}
-                        className="flex gap-2"
-                    >
-                        <Pencil className="w-4 h-4" />
-                        Edit Profile
-                    </Button>
+                    {/* 🧾 Modal Dialog */}
+                    <CompanyProfileEditDialog
+                        open={editOpen}
+                        setOpen={setEditOpen}
+                        companyData={{
+                            name: user.username ?? "",
+                            description: user.description ?? "",
+                            website: userAny.website_url ?? "",
+                            industry: userAny.industry ?? "",
+                            walletAddress: user.wallet_address ?? "",
+                            avatarURL: user.avatar_url ?? "",
+                        }}
+                        onUpdate={async (updatedData) => {
+                            console.log("Updated company data:", updatedData);
+                            // TODO: Trigger data re-fetch or context update here if needed
+                            await refetchUserData();
+                            return true;
+                        }}
+                    />
                 </CardHeader>
 
                 <CardContent>
