@@ -3,6 +3,7 @@
 import Heading from "@/components/custom/heading";
 import { WordRotate } from "@/components/magicui/word-rotate";
 import HowItWorks from "@/components/custom/how-it-works";
+import TechStack from "@/components/custom/tech-stack";
 import Footer from "@/components/custom/footer";
 
 export default function HomePage() {
@@ -12,16 +13,30 @@ export default function HomePage() {
       <main>
         <section
           id="hero"
-          className="min-h-screen px-4 md:px-8 lg:px-16 py-20 flex flex-col"
+          className="min-h-screen px-4 md:px-8 lg:px-16 py-20 flex flex-col justify-center relative"
         >
-          <h1 className="text-3xl font-black">
-            deship makes scholarships more{" "}
-            <WordRotate
-              duration={3000}
-              className="text-4xl text-highlight"
-              words={["EQUAL", "SIMPLE", "TRANSPARENT"]}
-            />
-          </h1>
+          <div className="max-w-7xl mx-auto">
+            <div className="space-y-10">
+              <div className="space-y-6">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight">
+                  deship makes scholarships more{" "}
+                  <WordRotate
+                    duration={3000}
+                    className="text-5xl md:text-6xl lg:text-7xl text-highlight inline-block"
+                    words={["EQUAL", "SIMPLE", "TRANSPARENT"]}
+                  />
+                </h1>
+                <p className="text-xl md:text-2xl text-white max-w-3xl font-medium">
+                  A decentralized platform revolutionizing scholarship applications through blockchain technology and zero-knowledge proofs.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-6">
+                <button className="px-8 py-4 bg-highlight text-white rounded-xl font-bold text-lg hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                  Learn More
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* why deship section, describing why deship exists */}
@@ -56,9 +71,12 @@ export default function HomePage() {
           <HowItWorks />
         </section>
 
-        {/* Tech Stack Section, describing the solution architecture */}
-        <section id="tech-stack" className="px-4 md:px-8 lg:px-16 py-20">
-          {/* Can only be done after we finalized the assignment */}
+        {/* Tech Stack Section */}
+        <section id="tech-stack" className="px-4 md:px-8 lg:px-16 py-20 bg-[#d4d8f0]">
+          <h2 className="text-4xl font-black text-center pb-10 text-lightbg_text">
+            Our Technology Stack
+          </h2>
+          <TechStack />
         </section>
       </main>
       <Footer />
