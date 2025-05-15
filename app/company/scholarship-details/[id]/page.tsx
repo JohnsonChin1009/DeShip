@@ -222,7 +222,7 @@ export default function ScholarshipDetailsPage() {
           {/* Action Buttons */}
           <div className="p-6 pb-3 flex justify-between items-center">
             <Button variant="outline" size="sm" asChild>
-              <Link href="/company/scholars">{"< Back to Listings"}</Link>
+              <Link href="/dashboard">{"< Back "}</Link>
             </Button>
             <div className="space-x-2">
               <ScholarshipEditDialog
