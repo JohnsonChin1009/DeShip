@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Compass, GraduationCap, LayoutDashboard, PanelLeftClose, Users, User } from "lucide-react";
+import { Compass, GraduationCap, LayoutDashboard, PanelLeftClose, Users, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -26,7 +26,6 @@ export default function Sidebar({ role, isOpen, setIsOpen, selectedTab, setSelec
   const companyNavTabs = [
     { key: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { key: "scholars", icon: GraduationCap, label: "Scholars" },
-    { key: "programs", icon: BookOpen, label: "Programs" },
     { key: "applications", icon: Users, label: "Applications" },
     { key: "profile", icon: User, label: "Profile" },
   ];
