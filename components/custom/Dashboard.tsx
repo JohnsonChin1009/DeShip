@@ -13,13 +13,15 @@ import {
   XAxis,
   YAxis
 } from 'recharts';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { mockCompanies, mockScholars, mockTransactions } from '@/lib/mockData';
+import { weiToEth } from '@/lib/utils';
+import { useUser } from '@/context/UserContext';
+import { usePrivy } from "@privy-io/react-auth";
 
-const company = mockCompanies[0];
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 interface DashboardSectionProps {
@@ -27,7 +29,7 @@ interface DashboardSectionProps {
 }
 
 export default function DashboardSection({ role }: DashboardSectionProps) {
-    const dashboard = role === "Company" ? CompanyDashboard() : StudentDashboard();
+    const dashboard = role === "Company" ? <CompanyDashboard /> : <StudentDashboard />;
 
     return (
         <div>
@@ -36,11 +38,187 @@ export default function DashboardSection({ role }: DashboardSectionProps) {
     )
 }
 
+interface CompanyData {
+  id: string;
+  totalScholarships: number;
+  totalFunding: string;
+  totalFundingReleased: string;
+  totalFundingRemaining: string;
+  totalApprovedScholars: number;
+  totalActiveScholars: number;
+}
+
+interface ScholarPerformance {
+  name: string;
+  performance: number;
+}
+
+interface Transaction {
+  id: string;
+  scholarship: {
+    id: string;
+    title: string;
+  };
+  student: {
+    id: string;
+  };
+  milestone: {
+    title: string;
+  };
+  amount: string;
+  blockTimestamp: string;
+  transactionHash: string;
+}
+
+interface Scholar {
+  id: string;
+  completionPercentage: string;
+  totalFundingReceived: string;
+  appliedScholarships: {
+    id: string;
+    title: string;
+  }[];
+  approvedScholarships: {
+    id: string;
+    title: string;
+    totalAmount: string;
+    completionPercentage: string;
+  }[];
+}
+
+interface DashboardData {
+  company: CompanyData | null;
+  scholarPerformance: ScholarPerformance[];
+  recentTransactions: Transaction[];
+  activeScholars: Scholar[];
+}
+
 const CompanyDashboard = () => {
+    const { user: contextUser } = useUser();
+    const { user: privyUser, ready: privyReady, authenticated, login } = usePrivy();
+    const [dashboardData, setDashboardData] = useState<DashboardData>({
+      company: null,
+      scholarPerformance: [],
+      recentTransactions: [],
+      activeScholars: []
+    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+      const fetchDashboardData = async () => {
+        try {
+          if (!privyReady) {
+            // Wait for Privy to be ready
+            return;
+          }
+
+          // Get wallet address from Privy, user context, or localStorage as fallback
+          let walletAddress;
+          
+          // First priority: Privy authenticated wallet
+          if (authenticated && privyUser?.wallet?.address) {
+            walletAddress = privyUser.wallet.address;
+            console.log("Using Privy wallet address:", walletAddress);
+          } 
+          // Second priority: User context
+          else if (contextUser?.wallet_address) {
+            walletAddress = contextUser.wallet_address;
+            console.log("Using context wallet address:", walletAddress);
+          } 
+          // Last resort: Try localStorage
+          else {
+            try {
+              walletAddress = typeof window !== 'undefined' ? localStorage.getItem("walletAddress") : null;
+              console.log("Using localStorage wallet address:", walletAddress);
+            } catch (error) {
+              console.error("Error accessing localStorage:", error);
+            }
+          }
+          
+          if (!walletAddress) {
+            console.warn('No wallet address found');
+            setError("No wallet address found. Please connect your wallet.");
+            setIsLoading(false);
+            return;
+          }
+          
+          const response = await fetch('/api/fetchCompanyDashboard', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              companyAddress: walletAddress,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch dashboard data');
+          }
+
+          const data = await response.json();
+          setDashboardData(data);
+        } catch (err) {
+          setError((err as Error).message);
+          console.error('Error fetching dashboard data:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchDashboardData();
+    }, [contextUser, privyUser, privyReady, authenticated]);
+
+    // Prepare funding distribution data for pie chart
+    const fundingDistributionData = dashboardData.company ? [
+      { name: 'Released', value: weiToEth(dashboardData.company.totalFundingReleased) },
+      { name: 'Remaining', value: weiToEth(dashboardData.company.totalFundingRemaining) }
+    ] : [];
+
+    if (isLoading) {
+      return <div className="flex justify-center items-center min-h-[300px]">Loading dashboard data...</div>;
+    }
+
+    if (error) {
+      // Special case for when no wallet address is found
+      if (error === "No wallet address found. Please connect your wallet.") {
+        return (
+          <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
+            <div className="text-amber-500 font-medium">No wallet address found</div>
+            <Button 
+              onClick={() => privyUser ? window.location.reload() : authenticated ? window.location.reload() : login()} 
+              variant="default"
+            >
+              Connect Wallet
+            </Button>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
+          <div className="text-red-500 font-medium">Error: {error}</div>
+          <Button onClick={() => window.location.reload()} variant="outline">Try Again</Button>
+        </div>
+      );
+    }
+
+    const { company, scholarPerformance, recentTransactions, activeScholars } = dashboardData;
+    console.log("Company Data:", company);
+
+    if (!company) {
+      return (
+        <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
+          <div className="text-amber-500 font-medium">No company data found. You may need to create a scholarship first.</div>
+        </div>
+      );
+    }
+
     return (
         <div className="space-y-6">
         {/* Metrics */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Scholars</CardTitle>
@@ -61,9 +239,9 @@ const CompanyDashboard = () => {
                 </svg>
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{company.metrics?.totalScholars}</div>
+                <div className="text-2xl font-bold">{company.totalApprovedScholars}</div>
                 <p className="text-xs text-muted-foreground">
-                {company.metrics?.activeScholars} currently active
+                {company.totalActiveScholars} currently active
                 </p>
             </CardContent>
             </Card>
@@ -85,10 +263,10 @@ const CompanyDashboard = () => {
             </CardHeader>
             <CardContent>
                 <div className="text-2xl font-bold">
-                ${company.metrics?.totalFundsAllocated.toLocaleString()}
+                {weiToEth(company.totalFunding).toFixed(6)} ETH
                 </div>
                 <p className="text-xs text-muted-foreground">
-                Across {company.scholarshipsPosted} programs
+                Across {company.totalScholarships} programs
                 </p>
             </CardContent>
             </Card>
@@ -109,33 +287,13 @@ const CompanyDashboard = () => {
                 </svg>
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{company.metrics?.successRate}%</div>
+                <div className="text-2xl font-bold">
+                  {company.totalApprovedScholars > 0 
+                    ? ((weiToEth(company.totalFundingReleased) / weiToEth(company.totalFunding)) * 100).toFixed(1) 
+                    : 0}%
+                </div>
                 <p className="text-xs text-muted-foreground">
-                Program completion rate
-                </p>
-            </CardContent>
-            </Card>
-            <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">ROI</CardTitle>
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                className="h-4 w-4 text-muted-foreground"
-                >
-                <rect width="20" height="14" x="2" y="5" rx="2" />
-                <path d="M2 10h20" />
-                </svg>
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{company.metrics?.roi}%</div>
-                <p className="text-xs text-muted-foreground">
-                Return on investment
+                Funds disbursement rate
                 </p>
             </CardContent>
             </Card>
@@ -152,19 +310,19 @@ const CompanyDashboard = () => {
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                     <Pie
-                        data={company.metrics?.geographicDistribution}
-                        dataKey="funding"
-                        nameKey="region"
+                        data={fundingDistributionData}
+                        dataKey="value"
+                        nameKey="name"
                         cx="50%"
                         cy="50%"
                         outerRadius={80}
                         label
                     >
-                        {company.metrics?.geographicDistribution.map((entry, index) => (
+                        {fundingDistributionData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip formatter={(value: number) => `${Number(value).toFixed(6)} ETH`} />
                     </PieChart>
                 </ResponsiveContainer>
                 </div>
@@ -178,10 +336,10 @@ const CompanyDashboard = () => {
             <CardContent>
                 <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={company.metrics?.scholarPerformance}>
+                    <BarChart data={scholarPerformance}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis />
+                    <YAxis domain={[0, 100]} />
                     <Tooltip />
                     <Bar dataKey="performance" fill="#8884d8" />
                     </BarChart>
@@ -199,20 +357,24 @@ const CompanyDashboard = () => {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                {mockTransactions.map((tx) => (
-                    <div key={tx.hash} className="flex items-center justify-between">
-                    <div>
-                        <p className="font-medium">{tx.type}</p>
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{tx.milestone.title} - {tx.scholarship.title}</p>
                         <p className="text-sm text-muted-foreground">
-                        {format(new Date(tx.timestamp), 'MMM dd, yyyy')}
+                          {format(new Date(parseInt(tx.blockTimestamp) * 1000), 'MMM dd, yyyy')}
                         </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{weiToEth(tx.amount).toFixed(6)} ETH</p>
+                        <p className="text-sm text-muted-foreground truncate max-w-[150px]">To: {`${tx.student.id.substring(0, 4)}...${tx.student.id.substring(tx.student.id.length - 3)}`}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                        <p className="font-medium">${tx.amount.toLocaleString()}</p>
-                        <p className="text-sm text-muted-foreground">{tx.status}</p>
-                    </div>
-                    </div>
-                ))}
+                  ))
+                ) : (
+                  <p>No recent transactions</p>
+                )}
                 </div>
             </CardContent>
             </Card>
@@ -223,27 +385,36 @@ const CompanyDashboard = () => {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                {mockScholars.map((scholar) => (
-                    <div key={scholar.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                            <AvatarFallback>{scholar.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-medium">{scholar.name}</p>
-                            <p className="text-sm text-muted-foreground">{scholar.program}</p>
+                {activeScholars.length > 0 ? (
+                  activeScholars.map((scholar) => {
+                    const scholarshipTitle = scholar.approvedScholarships?.[0]?.title || "Unknown Program";
+                    const performanceValue = parseFloat(scholar.completionPercentage);
+                    
+                    return (
+                      <div key={scholar.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{scholar.id.substring(0, 2)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium truncate max-w-[200px]">{`${scholar.id.substring(0, 4)}...${scholar.id.substring(scholar.id.length - 3)}`}</p>
+                              <p className="text-sm text-muted-foreground">{scholarshipTitle}</p>
+                            </div>
+                          </div>
+                          <Button variant="ghost" size="sm">View</Button>
                         </div>
+                        <Progress value={performanceValue} className="h-2" />
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                          <span>Performance</span>
+                          <span>{performanceValue.toFixed(1)}%</span>
                         </div>
-                        <Button variant="ghost" size="sm">View</Button>
-                    </div>
-                    <Progress value={scholar.performance} className="h-2" />
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Performance</span>
-                        <span>{scholar.performance}%</span>
-                    </div>
-                    </div>
-                ))}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No active scholars</p>
+                )}
                 </div>
             </CardContent>
             </Card>
@@ -255,7 +426,7 @@ const CompanyDashboard = () => {
 const StudentDashboard = () => {
     return (
         <>
-                    <div>
+            <div>
                 Student Dashboard
             </div>
         </>
