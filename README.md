@@ -44,3 +44,41 @@ npm run dev
 1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D)
 2. ScholarshipFactory Contract for Scholarships [Click Here!](https://sepolia.scrollscan.com/address/0x39F88Dc30438379135c6411AD65374F16Da37866)
 3. ScholarshipAutomationHandler for Automatic Fund Distribution [Click Here!](https://sepolia.scrollscan.com/address/0x8864Ef59B160E10dF7465dD78179E2419e174a59)
+
+## 📊 **The Graph Integration**  
+DeShip uses **The Graph** to index and query scholarship data, such as:  
+- **Total scholarships** (active/completed)  
+- **Funding distribution** (released vs. locked funds)  
+- **Student's performance** (milestone completion rates)  
+- **Recent transactions** (fund releases)
+- **Success Rate** (fund distribution)  
+
+### **Subgraph Details**  
+- **Subgraph URL**:  
+  [https://api.studio.thegraph.com/query/105145/de-ship/version/latest](https://api.studio.thegraph.com/query/105145/de-ship/version/latest)  
+- **Subgraph Repository**:  
+  [https://github.com/johnp2003/deship-thegraph](https://github.com/johnp2003/deship-thegraph)
+
+## ⚙️ **Chainlink Automation**
+
+DeShip leverages **Chainlink Automation** to automate critical actions in scholarship management, removing the need for manual intervention and enhancing transparency.
+
+### ✅ **Automated Functions**
+- **Milestone Verification**: Checks if students have completed required milestones.
+- **Fund Releases**: Automatically transfers funds to approved students upon milestone completion.
+- **Scholarship Status Updates**: Marks scholarships as completed when all milestones are fulfilled.
+
+### 🧠 **How It Works**
+1. **Monitoring**: Chainlink nodes continuously run `checkUpkeep()` on the `AutomationHandler` contract.
+2. **Triggering Actions**: If upkeep is needed, `performUpkeep()` is executed to:
+   - Validate milestone completion.
+   - Release corresponding funds.
+   - Update scholarship statuses on-chain.
+3. **Transparency**: Every action is verifiable and logged on the blockchain for audit purposes.
+
+### 🔍 **Upkeep Details**
+| Parameter         | Value                             |
+|------------------|-----------------------------------|
+| **Upkeep ID**     | `78658125821863182812978357463115396864169683263279217807875432969863982491630`          |
+| **Contract**      | `ScholarshipAutomationHandler`               |
+| **Contract Address** | `0x8864Ef59B160E10dF7465dD78179E2419e174a59` |
