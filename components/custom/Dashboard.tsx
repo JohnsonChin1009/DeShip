@@ -105,31 +105,44 @@ const CompanyDashboard = () => {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [avatarImages, setAvatarImages] = useState<string[]>([]);
+    const [scholarUsernames, setScholarUsernames] = useState<{[address: string]: string}>({});
 
-    // Move the fetchDashboardData function outside useEffect
+    useEffect(() => {
+      console.log("Loading avatar images");
+      setAvatarImages([
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//1.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//2.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//3.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//4.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//5.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//6.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//7.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//8.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//9.png",
+        "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//10.png",
+      ]);
+    }, []);
+
     const fetchDashboardData = useCallback(async () => {
       try {
         if (!privyReady) {
-          // Wait for Privy to be ready
+          console.log("Privy not ready yet");
           return;
         }
 
         setIsLoading(true);
         
-        // Get wallet address from Privy, user context, or localStorage as fallback
         let walletAddress;
         
-        // First priority: Privy authenticated wallet
         if (authenticated && privyUser?.wallet?.address) {
           walletAddress = privyUser.wallet.address;
           console.log("Using Privy wallet address:", walletAddress);
         } 
-        // Second priority: User context
         else if (contextUser?.wallet_address) {
           walletAddress = contextUser.wallet_address;
           console.log("Using context wallet address:", walletAddress);
         } 
-        // Last resort: Try localStorage
         else {
           try {
             walletAddress = typeof window !== 'undefined' ? localStorage.getItem("walletAddress") : null;
@@ -161,6 +174,56 @@ const CompanyDashboard = () => {
         }
 
         const data = await response.json();
+        console.log("Dashboard data fetched:", data);
+        
+        const usernames: {[address: string]: string} = {};
+        
+        if (data.activeScholars && data.activeScholars.length > 0) {
+          console.log("Fetching usernames for", data.activeScholars.length, "scholars");
+          
+          await Promise.all(data.activeScholars.map(async (scholar: Scholar) => {
+            try {
+              const studentResponse = await fetch('/api/fetchUserData', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  walletAddress: scholar.id,
+                  role: 'Student'
+                }),
+              });
+              
+              const studentData = await studentResponse.json();
+              
+              if (studentResponse.ok && studentData.status === 200) {
+                console.log("Fetched student data for", scholar.id, studentData.data);
+                usernames[scholar.id] = studentData.data.username || `Scholar ${scholar.id.substring(0, 4)}...`;
+              } else {
+                console.error("Error fetching student data:", studentData.error);
+                usernames[scholar.id] = `Scholar ${scholar.id.substring(0, 4)}...`;
+              }
+            } catch (err) {
+              console.error("Error fetching student data for", scholar.id, err);
+              usernames[scholar.id] = `Scholar ${scholar.id.substring(0, 4)}...`;
+            }
+          }));
+          
+          console.log("Usernames fetched:", usernames);
+          setScholarUsernames(usernames);
+          
+          if (data.scholarPerformance && data.scholarPerformance.length > 0) {
+            const updatedPerformance = data.scholarPerformance.map((perf: ScholarPerformance) => {
+              return {
+                ...perf,
+                name: usernames[perf.name] || perf.name
+              };
+            });
+            
+            data.scholarPerformance = updatedPerformance;
+          }
+        }
+        
         setDashboardData(data);
         setError(null);
         return true;
@@ -177,7 +240,6 @@ const CompanyDashboard = () => {
       fetchDashboardData();
     }, [fetchDashboardData]);
 
-    // Prepare funding distribution data for pie chart
     const fundingDistributionData = dashboardData.company ? [
       { name: 'Released', value: weiToEth(dashboardData.company.totalFundingReleased) },
       { name: 'Remaining', value: weiToEth(dashboardData.company.totalFundingRemaining) }
@@ -188,7 +250,6 @@ const CompanyDashboard = () => {
     }
 
     if (error) {
-      // Special case for when no wallet address is found
       if (error === "No wallet address found. Please connect your wallet.") {
         return (
           <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
@@ -224,7 +285,6 @@ const CompanyDashboard = () => {
 
     return (
         <div className="space-y-6">
-        {/* Metrics */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -306,7 +366,6 @@ const CompanyDashboard = () => {
             </Card>
         </div>
 
-        {/* Charts */}
         <div className="grid gap-6 md:grid-cols-2">
             <Card>
             <CardHeader>
@@ -356,7 +415,6 @@ const CompanyDashboard = () => {
             </Card>
         </div>
 
-        {/* Recent Activity */}
         <div className="grid gap-6 md:grid-cols-2">
             <Card>
             <CardHeader>
@@ -375,7 +433,12 @@ const CompanyDashboard = () => {
                       </div>
                       <div className="text-right">
                         <p className="font-medium">{weiToEth(tx.amount).toFixed(6)} ETH</p>
-                        <p className="text-sm text-muted-foreground truncate max-w-[150px]">To: {`${tx.student.id.substring(0, 4)}...${tx.student.id.substring(tx.student.id.length - 3)}`}</p>
+                        <div>
+                          <p className="font-medium text-sm">{scholarUsernames[tx.student.id] || 'Scholar'}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {`${tx.student.id.substring(0, 4)}...${tx.student.id.substring(tx.student.id.length - 3)}`}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -396,16 +459,26 @@ const CompanyDashboard = () => {
                   activeScholars.map((scholar) => {
                     const scholarshipTitle = scholar.approvedScholarships?.[0]?.title || "Unknown Program";
                     const performanceValue = parseFloat(scholar.completionPercentage);
+                    const username = scholarUsernames[scholar.id] || `${scholar.id.substring(0, 4)}...${scholar.id.substring(scholar.id.length - 3)}`;
+                    const avatarIndex = username.charCodeAt(0) % avatarImages.length;
                     
                     return (
                       <div key={scholar.id} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
-                              <AvatarFallback>{scholar.id.substring(0, 2)}</AvatarFallback>
+                              {avatarImages.length > 0 ? (
+                                <img 
+                                  src={avatarImages[avatarIndex]} 
+                                  alt={username}
+                                  className="w-full h-full object-cover" 
+                                />
+                              ) : (
+                                <AvatarFallback>{username.substring(0, 2)}</AvatarFallback>
+                              )}
                             </Avatar>
                             <div>
-                              <p className="font-medium truncate max-w-[200px]">{`${scholar.id.substring(0, 4)}...${scholar.id.substring(scholar.id.length - 3)}`}</p>
+                              <p className="font-medium truncate max-w-[200px]">{username}</p>
                               <p className="text-sm text-muted-foreground">{scholarshipTitle}</p>
                             </div>
                           </div>
