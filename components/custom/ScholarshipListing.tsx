@@ -179,7 +179,7 @@ export default function ScholarshipListing() {
                                                     </td>
                                                     <td className="border border-gray-200 px-4 py-2 text-center">
                                                         <Button variant="outline" size="sm" asChild>
-                                                            <Link href={`/scholarship-details/${scholarship.address}`}>
+                                                            <Link href={`/company/scholarship-details/${scholarship.address}`}>
                                                                 <Eye className="inline mr-1 w-4 h-4" /> View
                                                             </Link>
                                                         </Button>

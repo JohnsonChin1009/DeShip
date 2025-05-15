@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileInput } from '@/components/ui/file-input';
-import Header from "@/components/custom/header";
 import Sidebar from '@/components/custom/sidebar';
 import { useUser } from "@/context/UserContext";
 
@@ -52,13 +51,13 @@ export default function CreateScholarshipPage() {
 
   // To set the user's role from localStorage
   useEffect(() => {
-      const userRole = localStorage.getItem("userRole");
+    const userRole = localStorage.getItem("userRole");
 
-      if (!userRole) {
-          return; 
-      }
+    if (!userRole) {
+      return;
+    }
 
-      setRole(userRole);
+    setRole(userRole);
   }, [])
 
   const form = useForm<FormValues>({
