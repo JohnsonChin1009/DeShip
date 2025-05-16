@@ -238,15 +238,34 @@ Traditional scholarships system faces several **critical challenges** that hinde
    
    Add the following to your `.env` file:
    ```
-   # Frontend Environment Variables
-   NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
-   NEXT_PUBLIC_HARDHAT_RPC_URL=http://127.0.0.1:8545
-   NEXT_PUBLIC_NETWORK_ID=31337
+   # Pinata IPFS Configuration
+   PINATA_GATEWAY=
+   PINATA_API_KEY=
+   PINATA_API_SECRET=
+   PINATA_JWT_SECRET=
 
-   # Backend Environment Variables
-   PRIVATE_KEY=your_wallet_private_key
-   SEPOLIA_RPC_URL=your_sepolia_rpc_url
-   ETHERSCAN_API_KEY=your_etherscan_api_key
+   # Privy Secrets
+   NEXT_PUBLIC_PRIVY_APP_ID=
+   PRIVY_APP_SECRET=
+   PRIVY_JWKS_ENDPOINT=
+
+   # IPFS Variables for NFT Minting
+   COMPANY_METADATA_CID=
+   STUDENT_METADATA_CID=
+
+   # Metamask Private Key
+   PRIVATE_KEY=
+
+   # Supabase Variables
+   NEXT_PUBLIC_SUPABASE_URL=
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+   # Scholarship Contract Private Key
+   METAMASK_PRIVATE_KEY=
+
+   # Hardhat Configuration (Local Development)
+   NEXT_PUBLIC_HARDHAT_RPC_URL=
+   NEXT_PUBLIC_NETWORK_ID=
    ```
 
 4. **Start Local Blockchain**
@@ -263,11 +282,16 @@ Traditional scholarships system faces several **critical challenges** that hinde
    npx hardhat run scripts/deploy.js --network localhost
    ```
    
-   After deployment, update the contract addresses in `lib/contractABI.ts`:
+   After deployment, update the contract addresses and its ABI in `lib/contractABI.ts`:
    ```typescript
    export const roleNFT_CA = "deployed_role_nft_address";
    export const scholarshipFactory_CA = "deployed_factory_address";
-   export const automationHandler_CA = "deployed_handler_address";
+   export const scholarshipAutomationHandler_CA = "deployed_handler_address";
+
+   export const roleNFT_ABI = "deployed_role_nft_abi";
+   export const scholarshipFactory_ABI = "deployed_scholarship_factory_abi";
+   export const scholarship_ABI = "deployed_scholarship_abi";
+   export const scholarshipAutomationHandler_ABI = "deployed_handler_abi";
    ```
 
 6. **Import Test Accounts**
