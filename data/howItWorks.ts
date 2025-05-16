@@ -8,7 +8,7 @@ export const stepsData = [
     {
         id: "02",
         title: "Setup your Profile",
-        image: "https://media1.tenor.com/m/aXwM9V7a8JoAAAAd/100x-memecoin.gif",
+        image: "/Signup.png",
         description: "Create your decentralized identity by providing necessary details which will be protected by zkProofs."
     },
     {
