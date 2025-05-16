@@ -289,11 +289,34 @@ const CompanyDashboard = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch dashboard data');
+          if (response.status === 404) {
+            setDashboardData({
+              company: null,
+              scholarPerformance: [],
+              recentTransactions: [],
+              activeScholars: []
+            });
+            setError(null);
+            setIsLoading(false);
+            return true;
+          }
+          throw new Error(`Failed to fetch dashboard data: ${response.status}`);
         }
 
         const data = await response.json();
         console.log("Dashboard data fetched:", data);
+        
+        if (!data.company) {
+          setDashboardData({
+            company: null,
+            scholarPerformance: [],
+            recentTransactions: [],
+            activeScholars: []
+          });
+          setError(null);
+          setIsLoading(false);
+          return true;
+        }
         
         const usernames: {[address: string]: string} = {};
         
@@ -383,6 +406,15 @@ const CompanyDashboard = () => {
         );
       }
       
+      if (error.includes('404') || error.includes('data not found')) {
+        return (
+          <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
+            <div className="text-amber-500 font-medium">No company data found. You may need to create a scholarship first.</div>
+            <Button onClick={() => window.location.reload()} variant="outline">Refresh</Button>
+          </div>
+        );
+      }
+      
       return (
         <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
           <div className="text-red-500 font-medium">Error: {error}</div>
@@ -398,6 +430,7 @@ const CompanyDashboard = () => {
       return (
         <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
           <div className="text-amber-500 font-medium">No company data found. You may need to create a scholarship first.</div>
+          <Button onClick={() => window.location.reload()} variant="outline">Refresh</Button>
         </div>
       );
     }
