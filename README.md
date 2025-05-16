@@ -272,6 +272,10 @@ Traditional scholarships undergo multiple screening processes, resulting in late
    - Check console for specific errors
    - Verify all environment variables are set
 
+### Software Architecture
+![Software Architecture](https://res.cloudinary.com/dzumvmtzs/image/upload/v1747393011/latest_architecture_py9zbo.jpg)
+
+
 ### Contracts Deployed
 1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D#code)
 2. ScholarshipFactory Contract for Scholarships [Click Here!](https://sepolia.scrollscan.com/address/0x406Ef3A0fAd1B7347C45a1d4ABBb09AF7b4d203f#code)
