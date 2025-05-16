@@ -24,7 +24,7 @@ export default function ProfileSection() {
     const userAny = user as any;
 
     const avatarUrl = user.avatar_url
-        ? `https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//${user.avatar_url}.png`
+        ? user.avatar_url
         : "https://avatars.githubusercontent.com/u/107231772?v=4";
 
     return (
