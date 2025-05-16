@@ -180,8 +180,14 @@ export function ScholarshipCreateDialog({
         }
       );
 
-      await tx.wait();
-      
+      const receipt = await tx.wait();
+
+      // Get the scholarship contract address from the event logs
+      const event = receipt.logs.find(
+        (log: { fragment?: { name: string } }) => log.fragment && log.fragment.name === "ScholarshipCreated"
+      );
+      const scholarshipAddress = event ? event.args[0] : null;
+
       setIsOpen(false);
       
       if (onSuccess) {
@@ -192,7 +198,21 @@ export function ScholarshipCreateDialog({
       
       toast({
         title: 'Success',
-        description: 'Scholarship created successfully!',
+        description: (
+          <div className="flex flex-col gap-2">
+            <p>Scholarship created successfully!</p>
+            {scholarshipAddress && (
+              <a
+                href={`https://sepolia.scrollscan.com/address/${scholarshipAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-600 underline text-sm"
+              >
+                View on Explorer: {scholarshipAddress}
+              </a>
+            )}
+          </div>
+        ),
         variant: 'default',
         className: 'border-l-4 border-green-500 top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4',
       });
@@ -525,7 +545,7 @@ export function ScholarshipCreateDialog({
               <Button variant="outline" onClick={() => setIsOpen(false)} type="button">
                 Cancel
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 disabled={isCreating || percentageTotal !== 100}
               >
