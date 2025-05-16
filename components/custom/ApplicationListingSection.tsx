@@ -50,7 +50,7 @@ const ApplicantsTableSkeleton = () => {
                             <th className="border px-4 py-2 text-left">Field of Study</th>
                             <th className="border px-4 py-2 text-left">Status</th>
                             <th className="border px-4 py-2 text-left">Funds Withdrawn (ETH)</th>
-                            <th className="border px-4 py-2 text-left">Impact Score</th>
+                            <th className="border px-4 py-2 text-left">Impact Score (%)</th>
                             <th className="border px-2 py-2 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -208,6 +208,7 @@ export default function ApplicationListingSection() {
                         const studentApplication = await scholarshipContract.studentApplications(address);
                         const isApproved = studentApplication.isApproved;
                         const fundsWithdrawn = ethers.formatEther(studentApplication.fundsWithdrawn);
+                        // Store impact score as raw value for sorting purposes
                         const impactScore = parseInt(studentApplication.impactScore.toString());
                         
                         // Get student profile data from database
@@ -401,7 +402,7 @@ export default function ApplicationListingSection() {
                                             <th className="border px-4 py-2 text-left">Field of Study</th>
                                             <th className="border px-4 py-2 text-left">Status</th>
                                             <th className="border px-4 py-2 text-left">Funds Withdrawn (ETH)</th>
-                                            <th className="border px-4 py-2 text-left">Impact Score</th>
+                                            <th className="border px-4 py-2 text-left">Impact Score (%)</th>
                                             <th className="border px-2 py-2 text-center">Actions</th>
                                         </tr>
                                     </thead>
@@ -429,7 +430,7 @@ export default function ApplicationListingSection() {
                                                         </td>
                                                         <td className="border px-4 py-2">{applicant.fundsWithdrawn}</td>
                                                         <td className="border px-4 py-2">
-                                                            <span className="font-medium">{applicant.impactScore}</span>
+                                                            <span className="font-medium">{(applicant.impactScore / 100).toFixed(2)}%</span>
                                                         </td>
                                                         <td className="border px-2 py-2 text-center">
                                                             <div className="flex justify-center space-x-2">
