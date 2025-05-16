@@ -2,7 +2,33 @@
 a decentralized web platform that ensures fairness, accountable and on-time scholarships to students while also eliminating demographic biasness using zkProofs.
 
 ## ⚠️ Problem
-Traditional scholarships undergo multiple screening processes, resulting in late confirmation of scholarship towards multiple students. Students should be able to receive scholarships in a timely manner without facing unnecessary delays or biases. The current scholarship system faces several challenges. Multiple rounds of manual screening and lengthy verification procedures lead to delayed fund distribution. Unclear selection criteria and opaque decision-making processes create a lack of transparency in the system. Unconscious bias in selection and geographic restrictions limit access for underrepresented groups. Difficulty in verifying student credentials and concerns about fund misuse create trust issues in the scholarship distribution process. Our solution, DeShip, addresses these challenges by leveraging blockchain technology, zero-knowledge proofs, and smart contracts to create a transparent, efficient, and fair scholarship distribution system.
+
+Traditional scholarships system faces several **critical challenges** that hinder fairness, speed, and trust:
+
+### ⏳ Delayed Distribution
+- Multiple manual screening rounds lead to **slow confirmation** and **late fund releases**.
+- Students face uncertainty and financial stress due to **long wait times**.
+
+### 🚫 Lack of Transparency
+- **Opaque selection criteria** make it hard to understand why certain students are selected or rejected.
+- **No audit trail** for decisions or fund disbursement.
+
+### ⚖️ Unfair Selection & Bias
+- **Demographic/geographic bias** can restrict opportunities for underrepresented students.
+- **Unconscious bias** during manual reviews affects fair access.
+
+### 🔒 Trust Issues
+- Difficulty in **verifying student credentials** leads to skepticism from funders.
+- Concerns over **misuse of funds** without milestone-based accountability.
+
+---
+
+✅ **DeShip addresses these issues** by integrating:
+- 🧾 **Blockchain** for transparency and traceability  
+- 🕵️‍♂️ **Zero-Knowledge Proofs** for privacy-preserving verification  
+- ⚙️ **Smart Contracts** for core scholarship operations with trustless execution  
+- ⏱️ **Chainlink Automation** automatically release funds upon milestone completion  
+- 📊 **The Graph** for decentralized querying and data analysis
 
 ## Main Features
 
