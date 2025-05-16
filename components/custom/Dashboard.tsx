@@ -22,7 +22,9 @@ import { weiToEth } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { usePrivy } from "@privy-io/react-auth";
 import { Skeleton } from "@/components/ui/skeleton";
-import * as snarkjs from 'snarkjs';
+import { ethers } from 'ethers';
+import { scholarship_ABI } from '@/lib/contractABI';
+// import * as snarkjs from 'snarkjs';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -128,6 +130,18 @@ interface ScholarData {
   } | null;
 }
 
+const handleSubmitMilestone = async (scholarshipId: string) => {
+  const contractAddress = scholarshipId;
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+
+        const contract = new ethers.Contract(contractAddress, scholarship_ABI, signer);
+        const tx = await contract.completeMilestone(signer.getAddress(), 0);
+        await tx.wait();
+
+        console.log("Milestone completed successfully");
+}
 const DashboardSkeleton = () => {
   return (
     <div className="space-y-6">
@@ -995,6 +1009,13 @@ const StudentDashboard = () => {
                                                 <span>Progress ({scholarship.completedMilestones}/{scholarship.totalMilestones} milestones)</span>
                                                 <span>{percentComplete.toFixed(1)}%</span>
                                             </div>
+                                            <Button
+                                              onClick={() => handleSubmitMilestone(scholarship.id,)}
+                                              disabled={statusMapping[scholarship.status] === "Closed"}
+                                              variant={"outline"}
+                                            >
+                                              Submit Milestone
+                                            </Button>
                                         </div>
                                     );
                                 })

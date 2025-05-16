@@ -14,6 +14,12 @@ interface ScholarshipCardProps {
 
 import ApplicationDialog from "@/components/custom/ApplicationDialog";
 
+// Helper function to truncate Ethereum addresses
+const truncateAddress = (address: string) => {
+  if (!address) return "";
+  return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+};
+
 export default function ScholarshipCard({
   address,
   title,
@@ -31,12 +37,40 @@ export default function ScholarshipCard({
   return (
     <div className="border p-4 rounded-lg shadow-md bg-white mb-4">
       <h2 className="text-xl font-bold mb-2">{title}</h2>
-    <p><strong>Address:</strong> {address}</p>
-      <p><strong>Company:</strong> {company}</p>
-      <p><strong>Total Amount:</strong> {totalAmount} ETH</p>
-      <p><strong>Deadline:</strong> {deadline}</p>
-      <p><strong>Status:</strong> {status}</p>
-      <p><strong>Min GPA: {minGPA}</strong></p>
+      
+      <div className="mb-2">
+        <strong>Address:</strong> 
+        <span className="font-mono text-sm" title={address}>
+          {truncateAddress(address)}
+        </span>
+      </div>
+      
+      <div className="mb-2">
+        <strong>Company:</strong> 
+        <span className="font-mono text-sm" title={company}>
+          {truncateAddress(company)}
+        </span>
+      </div>
+      
+      <div className="mb-2">
+        <strong>Total Amount:</strong> {totalAmount} ETH
+      </div>
+      
+      <div className="mb-2">
+        <strong>Deadline:</strong> {deadline}
+      </div>
+      
+      <div className="mb-2">
+        <strong>Status:</strong> 
+        <span className={`font-medium ${status === "Open" ? "text-green-600" : "text-orange-600"}`}>
+          {status}
+        </span>
+      </div>
+      
+      <div className="mb-2">
+        <strong>Min GPA:</strong> {minGPA}
+      </div>
+      
       <div className="flex justify-end mt-4">
         <ApplicationDialog contractAddress={address} minGPA={minGPA}/>
       </div>
