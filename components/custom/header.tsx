@@ -100,7 +100,7 @@ const StudentHeader = () => {
   return (
     <>
     <div>
-      Student Header
+      Not sure what to put here
     </div>
     </>
   )

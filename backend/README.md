@@ -8,7 +8,7 @@ Remember to run in backend/ directory
 
 ```shell
 npx hardhat compile
-npx hardhat ignition deploy ignition/modules/RoleNFT.js --network scrollSepolia
+npx hardhat ignition deploy ignition/modules/{moduleName} --network scrollSepolia
 npx hardhat verify {contract_address} --network scrollSepolia
 ```
 

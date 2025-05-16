@@ -1,25 +1,21 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.29;
+pragma solidity ^0.8.28;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
+import { Ownable } from  "@openzeppelin/contracts/access/Ownable.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-// Import the RoleNFT interface
-interface IRoleNFT {
-    function hasRoleNFT(address user) external view returns (bool);
-    function getUserRole(address user) external view returns (string memory);
-    function isCompanyRole(uint256 tokenId) external view returns (bool);
-    function userTokenId(address user) external view returns (uint256);
+interface IGroth16Verifier {
+    function verifyProof(
+        uint[2] memory a,
+        uint[2][2] memory b,
+        uint[2] memory c,
+        uint[4] memory input
+    ) external view returns (bool);
 }
-
 contract ScholarshipFactory is Ownable, ReentrancyGuard {
-    using Counters for Counters.Counter;
-    using SafeMath for uint256;
-
-    Counters.Counter private _scholarshipIds;
+    IGroth16Verifier public verifier;
+    address public verifierAddress;
+    uint256 private _scholarshipIdsCounter;
     address[] public scholarships;
     mapping(address => address[]) public companyScholarships;
 
@@ -34,8 +30,15 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         uint256 scholarshipId
     );
 
-    constructor(address initialOwner, address _roleNFTAddress) Ownable(initialOwner) {
-        roleNFT = IRoleNFT(_roleNFTAddress);
+    constructor(address initialOwner, address _verifierAddress) Ownable(initialOwner) {
+        verifierAddress = _verifierAddress;
+    }
+
+    // Add verification management functions
+    function verifyAddress(address _company) external onlyOwner {
+        require(!verifiedCompanies[_company], "Address already verified");
+        verifiedCompanies[_company] = true;
+        emit CompanyVerified(_company);
     }
 
     function updateRoleNFTAddress(address _newRoleNFTAddress) external onlyOwner {
@@ -60,8 +63,8 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         require(msg.value >= _totalAmount, "Insufficient funds sent");
         require(_milestoneTitles.length == _milestoneAmounts.length, "Milestone data mismatch");
         
-        _scholarshipIds.increment();
-        uint256 newScholarshipId = _scholarshipIds.current();
+        uint256 scholarshipId = _scholarshipIdsCounter;
+        _scholarshipIdsCounter += 1;
 
         Scholarship newScholarship = new Scholarship{value: msg.value}(
             msg.sender,
@@ -73,7 +76,7 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
             _deadline,
             _milestoneTitles,
             _milestoneAmounts,
-            address(roleNFT)
+            verifierAddress
         );
 
         address scholarshipAddress = address(newScholarship);
@@ -85,7 +88,7 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
             msg.sender,
             _title,
             _totalAmount,
-            newScholarshipId
+            scholarshipId
         );
 
         return scholarshipAddress;
@@ -111,8 +114,7 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
     receive() external payable {}
 }
 
-contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
-    using SafeMath for uint256;
+contract Scholarship is ReentrancyGuard {
 
     enum ScholarshipStatus { Open, InProgress, Closed, Completed }
 
@@ -142,10 +144,7 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
     uint256 public totalAmount;
     uint256 public deadline;
     ScholarshipStatus public status;
-
-    // RoleNFT contract reference
-    IRoleNFT public roleNFT;
-
+    IGroth16Verifier public verifier;
     Milestone[] public milestones;
     mapping(address => StudentApplication) public studentApplications;
     address[] public applicants;
@@ -185,20 +184,14 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
         uint256 _deadline,
         string[] memory _milestoneTitles,
         uint256[] memory _milestoneAmounts,
-        address _roleNFTAddress
+        address _verifierAddress
     ) payable {
         require(_deadline > block.timestamp, "Invalid deadline");
         require(_milestoneTitles.length == _milestoneAmounts.length, "Invalid milestones");
-        
-        roleNFT = IRoleNFT(_roleNFTAddress);
-        
-        // Verify that company address has a company role
-        require(roleNFT.hasRoleNFT(_company), "Company has no role NFT");
-        require(keccak256(abi.encodePacked(roleNFT.getUserRole(_company))) == keccak256(abi.encodePacked("Company")), "Not a company role");
-        
+
         uint256 totalMilestoneAmounts;
         for (uint256 i = 0; i < _milestoneAmounts.length; i++) {
-            totalMilestoneAmounts = totalMilestoneAmounts.add(_milestoneAmounts[i]);
+            totalMilestoneAmounts += _milestoneAmounts[i];
             milestones.push(Milestone({
                 title: _milestoneTitles[i],
                 amount: _milestoneAmounts[i],
@@ -219,10 +212,21 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
             gpa: _gpa,
             additionalRequirements: _additionalRequirements
         });
+
+        verifier = IGroth16Verifier(_verifierAddress);
     }
 
-    function applyForScholarship() public isOpen {
+    // Keep core functions but remove field-of-study related code
+    function applyForScholarship(
+            uint[2] memory a,
+            uint[2][2] memory b,
+            uint[2] memory c,
+            uint[4] memory input
+    ) public isOpen {
         require(block.timestamp < deadline, "Deadline passed");
+
+        bool isValid = verifier.verifyProof(a, b, c, input);
+        require(isValid, "Invalid ZK proof");
         
         // Check if the sender has a student role
         require(roleNFT.hasRoleNFT(msg.sender), "No role NFT found");
@@ -283,7 +287,7 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
         require(!milestones[_milestoneId].fundsReleased, "Funds already released");
         
         uint256 amount = milestones[_milestoneId].amount;
-        application.fundsWithdrawn = application.fundsWithdrawn.add(amount);
+        application.fundsWithdrawn = application.fundsWithdrawn + amount;
         milestones[_milestoneId].fundsReleased = true;
         
         (bool success, ) = payable(_student).call{value: amount}("");
@@ -293,6 +297,7 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface {
         _updateScholarshipStatus(); 
     }
 
+    // Keep helper functions except field-of-study related ones
     function getTotalMilestones() public view returns (uint256) {
         return milestones.length;
     }

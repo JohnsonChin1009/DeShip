@@ -35,7 +35,7 @@ export default function Sidebar({ role, isOpen, setIsOpen, selectedTab, setSelec
     { key: "discover", icon: Compass, label: "Discover" },
     { key: "profile", icon: User, label: "Profile" },
   ];
-
+  console.log("Profile Image received", profileImage);
   // Use the appropriate tabs based on the role
   const tabs = role === "Company" ? companyNavTabs : studentNavTabs;
 

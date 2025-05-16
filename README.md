@@ -36,10 +36,6 @@ mv .env.example .env
 npm run dev
 ```
 
-### Solution Architecutre
-[Insert Solution Architecture image here]
-
-
 ### Contracts Deployed
 1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D)
 2. ScholarshipFactory Contract for Scholarships [Click Here!](https://sepolia.scrollscan.com/address/0x39F88Dc30438379135c6411AD65374F16Da37866)

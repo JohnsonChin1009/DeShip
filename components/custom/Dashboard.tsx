@@ -21,8 +21,8 @@ import { Progress } from '@/components/ui/progress';
 import { weiToEth } from '@/lib/utils';
 import { useUser } from '@/context/UserContext';
 import { usePrivy } from "@privy-io/react-auth";
-import Header from '@/components/custom/header';
 import { Skeleton } from "@/components/ui/skeleton";
+import * as snarkjs from 'snarkjs';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -620,7 +620,7 @@ const CompanyDashboard = () => {
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               {avatarImages.length > 0 ? (
-                                <img 
+                                <img
                                   src={avatarImages[avatarIndex]} 
                                   alt={username}
                                   className="w-full h-full object-cover" 
@@ -656,10 +656,30 @@ const CompanyDashboard = () => {
 }
 
 const StudentDashboard = () => {
+    const handleGenerateProof = async () => {
+        const inputs = {
+            "minGPA": "30",
+            "maxIncome": "60000",
+            "gpa": "30",
+            "fieldRelevance": "70",
+            "householdIncome": "40000",
+            "statementScore": "80"
+        }
+        const { proof, publicSignals } = await snarkjs.groth16.fullProve(inputs, "main.wasm", "main.groth16.zkey");
+
+            console.log("Proof: ");
+            console.log(JSON.stringify(proof, null, 1));
+            console.log("Public Signals: ");
+            console.log(JSON.stringify(publicSignals, null, 1));
+            console.log("Public Signals: ", publicSignals)
+
+    }
     return (
         <>
             <div>
-                Student Dashboard
+                <Button onClick={() => handleGenerateProof()}>
+                    Generate zkProof
+                </Button>
             </div>
         </>
     )

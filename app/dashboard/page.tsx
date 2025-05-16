@@ -8,7 +8,6 @@ import Profile from "@/components/custom/ProfileSection";
 import DiscoverScholarshipsSection from "@/components/custom/DiscoverScholarshipsSection";
 import ScholarshipListing from "@/components/custom/ScholarshipListing";
 import ApplicationListingSection from "@/components/custom/ApplicationListingSection";
-import CompanyProfileSection from "@/components/custom/CompanyProfileSection";
 import Sidebar from "@/components/custom/sidebar";
 import PrivyButton from "@/components/custom/PrivyButton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -159,18 +158,13 @@ export default function DashboardPage() {
           {selectedTab === "discover" && <DiscoverScholarshipsSection />}
           {selectedTab === "scholars" && <ScholarshipListing />}
           {selectedTab === "applications" && <ApplicationListingSection />}
-          {selectedTab === "profile" && (
-            role === "Student" ? <Profile /> : <CompanyProfileSection />
-          )}
+          {selectedTab === "profile" && <Profile role={role} />}
+          
         </div>
       </div>
     </main>
   );
 }
-
-type SectionProps = {
-  selectedTab: string;
-};
 
 // const StudentSection = ({ selectedTab }: SectionProps) => {
 //   const role = localStorage.getItem("userRole");

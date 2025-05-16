@@ -1,3 +1,5 @@
 {
-  "TestContract#TestContract": "0xA319Ca6D6CbbD94f02327375D9944AA80222cE78"
+  "TestContract#TestContract": "0xA319Ca6D6CbbD94f02327375D9944AA80222cE78",
+  "Groth16Verifier#Groth16Verifier": "0xBE1f6af4111f83128d192389BDB934faDB11A19F",
+  "ScholarshipFactory#ScholarshipFactory": "0x319227a9a6435474F79Ad26C69962b4ff468B96c"
 }

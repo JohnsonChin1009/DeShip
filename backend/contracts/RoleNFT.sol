@@ -17,6 +17,8 @@ contract RoleNFT is ERC721, ERC721URIStorage, Ownable {
 
     mapping(address => bool) public hasRoleNFT; // Track if a user already has an NFT
     mapping(address => uint256) public userTokenId; // Store user's token ID
+    mapping(uint256 => bool) public isCompanyRole;
+
 
     constructor(address initialOwner) ERC721("RoleNFT", "ROLE") Ownable(initialOwner) {}
 
@@ -42,7 +44,9 @@ contract RoleNFT is ERC721, ERC721URIStorage, Ownable {
 
         uint256 tokenId = _nextTokenId;
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID))); // Store full IPFS URI
+        _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID)));
+
+        isCompanyRole[tokenId] = true; // Mark this token as Company role
 
         companySupply++;
         hasRoleNFT[to] = true;
