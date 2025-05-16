@@ -65,6 +65,12 @@ Traditional scholarships undergo multiple screening processes, resulting in late
   - Automated scholarship status updates
   - Real-time payment processing
 
+- **The Graph Integration**:
+  - Real-time indexing of scholarship data
+  - Efficient querying of scholarship statistics
+  - Historical data tracking and analysis
+  - Performance metrics visualization
+
 ## 🔄 User Flow
 
 ### 🏢 Company Flow
