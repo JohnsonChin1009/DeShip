@@ -25,7 +25,7 @@ export default function Sidebar({ role, isOpen, setIsOpen, selectedTab, setSelec
 
   const companyNavTabs = [
     { key: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { key: "scholars", icon: GraduationCap, label: "Scholars" },
+    { key: "scholars", icon: GraduationCap, label: "Scholarships" },
     { key: "applications", icon: Users, label: "Applications" },
     { key: "profile", icon: User, label: "Profile" },
   ];
