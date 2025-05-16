@@ -383,7 +383,7 @@ export default function ApplicationListingSection() {
                         <ApplicantsTableSkeleton />
                     ) : scholarships.length === 0 ? (
                         <div className="flex flex-col justify-center items-center h-40 space-y-4">
-                            <p>You haven't created any scholarships yet.</p>
+                            <p>You have not created any scholarships yet.</p>
                             <Link href="/company/create-scholarship">
                                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center gap-2">
                                     <PlusCircle size={16} />
