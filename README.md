@@ -1,8 +1,8 @@
-# deship
+# 📚 DeShip
 a decentralized web platform that ensures fairness, accountable and on-time scholarships to students while also eliminating demographic biasness using zkProofs.
 
-## Problem
-Traditional scholarships undergo multiple screening processes, resulting in late confirmation of scholarship towards multiple students. Students should be able to 
+## ⚠️ Problem
+Traditional scholarships undergo multiple screening processes, resulting in late confirmation of scholarship towards multiple students. Students should be able to receive scholarships in a timely manner without facing unnecessary delays or biases. The current scholarship system faces several challenges. Multiple rounds of manual screening and lengthy verification procedures lead to delayed fund distribution. Unclear selection criteria and opaque decision-making processes create a lack of transparency in the system. Unconscious bias in selection and geographic restrictions limit access for underrepresented groups. Difficulty in verifying student credentials and concerns about fund misuse create trust issues in the scholarship distribution process. Our solution, DeShip, addresses these challenges by leveraging blockchain technology, zero-knowledge proofs, and smart contracts to create a transparent, efficient, and fair scholarship distribution system.
 
 ## Main Features
 
