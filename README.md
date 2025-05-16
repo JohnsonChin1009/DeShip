@@ -64,7 +64,7 @@ Traditional scholarships system faces several **critical challenges** that hinde
 
 - **Application Management**:
   - Company able to review student applications
-  - Company able to process applications (approve/reject)
+  - Company able to process applications
   - Company able to track application status
   - Company able to manage applications
 
@@ -133,10 +133,8 @@ Traditional scholarships system faces several **critical challenges** that hinde
    - View applicant information:
      - Student profile
      - Academic details
-     - Required documents
-   - Process applications:
-     - Approve suitable candidates
-     - Reject unsuitable applications
+     - Other informations
+   - Process applications
    - Track application status
 
 5. **Profile Management**
