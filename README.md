@@ -6,7 +6,7 @@ Traditional scholarships undergo multiple screening processes, resulting in late
 
 ## Main Features
 
-### Student Features
+### 👨‍🎓 Student Features
 - **Profile Management**:
   - Student able to create and update personal profile
   - Student able to add academic details and achievements
@@ -24,7 +24,7 @@ Traditional scholarships undergo multiple screening processes, resulting in late
   - Student able to view active scholarships
   - Student able to track milestone progress
 
-### Company Features
+### 🏢 Company Features
 - **Profile Management**:
   - Company able to create and update company profile
   - Company able to add company details and industry
@@ -48,7 +48,7 @@ Traditional scholarships undergo multiple screening processes, resulting in late
   - Company able to track funding distribution
   - Company able to analyze application trends
 
-### Additional Features
+### ⚡ Additional Features
 - **Privy Authentication**:
   - Privy wallet-based authentication system
   - Secure role-based access control
@@ -64,6 +64,93 @@ Traditional scholarships undergo multiple screening processes, resulting in late
   - Automatic fund distribution
   - Automated scholarship status updates
   - Real-time payment processing
+
+## 🔄 User Flow
+
+### 🏢 Company Flow
+1. **Account Registration**
+   - Connect MetaMask wallet
+   - Select "Company" role
+   - Fill in company details:
+     - Company name
+     - Industry
+     - Description
+     - Company Website
+   - Submit profile creation
+   - Redirected to company dashboard
+
+2. **Scholarship Creation**
+   - Navigate to "Create Scholarship"
+   - Fill in scholarship details:
+     - Title and description
+     - Funding amount
+     - Duration
+     - Eligibility criteria
+     - Milestone requirements
+   - Sign transaction with smart contract
+   - Scholarship appears in listing page
+
+3. **Scholarship Management**
+   - View all created scholarships
+   - Edit scholarship details
+   - Delete inactive scholarships
+   - Monitor application status
+
+4. **Application Review**
+   - Access applicant listing page
+   - View applicant information:
+     - Student profile
+     - Academic details
+     - Required documents
+   - Process applications:
+     - Approve suitable candidates
+     - Reject unsuitable applications
+   - Track application status
+
+5. **Profile Management**
+   - Access profile section
+   - View current company information
+   - Edit company details
+   - Update contact information
+   - Save changes
+
+### 👨‍🎓 Student Flow
+1. **Account Registration**
+   - Connect MetaMask wallet
+   - Select "Student" role
+   - Fill in student details:
+     - Personal information
+     - Academic background
+     - Portfolio
+   - Submit profile creation
+   - Redirected to student dashboard
+
+2. **Scholarship Discovery**
+   - Browse available scholarships
+   - Filter by:
+     - Amount
+     - Duration
+     - Requirements
+   - View detailed information
+   - Save preferred scholarships
+
+3. **Application Process**
+   - Select scholarship to apply
+   - Review requirements
+   - Fill in required information
+   - Submit application
+
+4. **Scholarship Management**
+   - View active scholarships
+   - Track milestone progress
+   - Submit milestone completions
+   - Monitor fund distribution
+
+5. **Profile Management**
+   - Access profile section
+   - View current information
+   - Update personal details and other information
+   - Save changes
 
 ## To run the application locally
 
