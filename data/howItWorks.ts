@@ -14,14 +14,14 @@ export const stepsData = [
     {
         id: "03",
         title: "Choose your Preferences",
-        image: "https://media1.tenor.com/m/aXwM9V7a8JoAAAAd/100x-memecoin.gif",
+        image: "/choosePreference.png",
         description: "Customize your profile by selecting scholarship categories, eligibility criteria, and preferences.",
         secondDescription: "This helps match you with the most relevant opportunities."
     },
     {
         id: "04",
         title: "Apply for Scholarships",
-        image: "https://media1.tenor.com/m/aXwM9V7a8JoAAAAd/100x-memecoin.gif",
+        image: "/applyScholarship.png",
         description: "Submit applications without exposing sensitive information. Your eligibility is verified using zkProofs, ensuring fairness and privacy."
     },
     {
