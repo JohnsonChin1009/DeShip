@@ -6,6 +6,7 @@ import Heading from "@/components/custom/heading";
 import { WordRotate } from "@/components/magicui/word-rotate";
 import HowItWorks from "@/components/custom/how-it-works";
 import TechStack from "@/components/custom/tech-stack";
+import Team from "@/components/custom/team";
 import Footer from "@/components/custom/footer";
 import IntroAnimation from "@/components/custom/intro-animation";
 
@@ -94,6 +95,14 @@ export default function HomePage() {
               Our Technology Stack
             </h2>
             <TechStack />
+          </section>
+
+          {/* Team Section */}
+          <section id="team" className="px-4 md:px-8 lg:px-16 py-20">
+            <h1 className="text-4xl font-black text-center pb-10">
+              Our Team
+            </h1>
+            <Team />
           </section>
         </main>
         <Footer />

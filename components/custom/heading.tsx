@@ -41,7 +41,7 @@ export default function Heading() {
                 </button>
 
                 {/* Mobile Menu */}
-                <nav 
+                <nav
                     ref={menuRef}
                     className={`py-4 absolute top-full left-0 w-full space-y-10 text-xl text-center bg-stroke 
                     transition-transform ease-in-out duration-300 transform 
@@ -86,5 +86,10 @@ const links = [
         id: 3,
         name: "tech stack",
         href: "#tech-stack",
+    },
+    {
+        id: 4,
+        name: "team",
+        href: "#team",
     }
 ]
