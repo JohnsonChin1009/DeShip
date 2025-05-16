@@ -273,9 +273,10 @@ Traditional scholarships undergo multiple screening processes, resulting in late
    - Verify all environment variables are set
 
 ### Contracts Deployed
-1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D)
-2. ScholarshipFactory Contract for Scholarships [Click Here!](https://sepolia.scrollscan.com/address/0x39F88Dc30438379135c6411AD65374F16Da37866)
-3. ScholarshipAutomationHandler for Automatic Fund Distribution [Click Here!](https://sepolia.scrollscan.com/address/0x8864Ef59B160E10dF7465dD78179E2419e174a59)
+1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D#code)
+2. ScholarshipFactory Contract for Scholarships [Click Here!](https://sepolia.scrollscan.com/address/0x406Ef3A0fAd1B7347C45a1d4ABBb09AF7b4d203f#code)
+3. ScholarshipAutomationHandler for Automatic Fund Distribution [Click Here!](https://sepolia.scrollscan.com/address/0x14331CcdE4041B1DeFDDC5AE56A1Dbd613Af4772#code)
+4. Groth16Verifier Contract [Click Here!](https://sepolia.scrollscan.com/address/0xBE1f6af4111f83128d192389BDB934faDB11A19F#code)
 
 ## 📊 **The Graph Integration**  
 DeShip uses **The Graph** to index and query scholarship data, such as:  

@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { Ownable } from  "@openzeppelin/contracts/access/Ownable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol"; 
 
 interface IGroth16Verifier {
     function verifyProof(
@@ -12,15 +13,26 @@ interface IGroth16Verifier {
         uint[4] memory input
     ) external view returns (bool);
 }
+
+interface IRoleNFT {
+    function hasRoleNFT(address user) external view returns (bool);
+    function getUserRole(address user) external view returns (string memory);
+    function isCompanyRole(uint256 tokenId) external view returns (bool);
+    function userTokenId(address user) external view returns (uint256);
+}
+
+
 contract ScholarshipFactory is Ownable, ReentrancyGuard {
     IGroth16Verifier public verifier;
     address public verifierAddress;
     uint256 private _scholarshipIdsCounter;
     address[] public scholarships;
     mapping(address => address[]) public companyScholarships;
+    mapping(address => bool) public verifiedCompanies;
 
-    // RoleNFT contract address
     IRoleNFT public roleNFT;
+
+    event CompanyVerified(address indexed company);
 
     event ScholarshipCreated(
         address indexed scholarshipAddress,
@@ -30,13 +42,13 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         uint256 scholarshipId
     );
 
-    constructor(address initialOwner, address _verifierAddress) Ownable(initialOwner) {
+    constructor(address initialOwner, address _verifierAddress, address _roleNFTAddress) Ownable(initialOwner) {
         verifierAddress = _verifierAddress;
+        roleNFT = IRoleNFT(_roleNFTAddress);
     }
 
-    // Add verification management functions
     function verifyAddress(address _company) external onlyOwner {
-        require(!verifiedCompanies[_company], "Address already verified");
+        require(!verifiedCompanies[_company], "Address  verified");
         verifiedCompanies[_company] = true;
         emit CompanyVerified(_company);
     }
@@ -60,8 +72,8 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
         require(roleNFT.hasRoleNFT(msg.sender), "No role NFT found");
         require(keccak256(abi.encodePacked(roleNFT.getUserRole(msg.sender))) == keccak256(abi.encodePacked("Company")), "Not a company role");
         
-        require(msg.value >= _totalAmount, "Insufficient funds sent");
-        require(_milestoneTitles.length == _milestoneAmounts.length, "Milestone data mismatch");
+        require(msg.value >= _totalAmount, "Insufficient funds");
+        require(_milestoneTitles.length == _milestoneAmounts.length, "Milestone mismatch");
         
         uint256 scholarshipId = _scholarshipIdsCounter;
         _scholarshipIdsCounter += 1;
@@ -76,7 +88,8 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
             _deadline,
             _milestoneTitles,
             _milestoneAmounts,
-            verifierAddress
+            verifierAddress,
+            address(roleNFT)
         );
 
         address scholarshipAddress = address(newScholarship);
@@ -114,7 +127,7 @@ contract ScholarshipFactory is Ownable, ReentrancyGuard {
     receive() external payable {}
 }
 
-contract Scholarship is ReentrancyGuard {
+contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface  {
 
     enum ScholarshipStatus { Open, InProgress, Closed, Completed }
 
@@ -135,6 +148,7 @@ contract Scholarship is ReentrancyGuard {
         bool isApproved;
         uint256 fundsWithdrawn;
         mapping(uint256 => bool) completedMilestones;
+        uint256 impactScore;
     }
 
     address public company;
@@ -144,13 +158,13 @@ contract Scholarship is ReentrancyGuard {
     uint256 public totalAmount;
     uint256 public deadline;
     ScholarshipStatus public status;
+    IRoleNFT public roleNFT;
     IGroth16Verifier public verifier;
     Milestone[] public milestones;
     mapping(address => StudentApplication) public studentApplications;
     address[] public applicants;
     address[] public approvedStudents;
 
-    // Events
     event StudentApplied(address student);
     event StudentApproved(address student);
     event MilestoneCompleted(address student, uint256 milestoneId);
@@ -184,10 +198,17 @@ contract Scholarship is ReentrancyGuard {
         uint256 _deadline,
         string[] memory _milestoneTitles,
         uint256[] memory _milestoneAmounts,
-        address _verifierAddress
+        address _verifierAddress,
+        address _roleNFTAddress
     ) payable {
         require(_deadline > block.timestamp, "Invalid deadline");
         require(_milestoneTitles.length == _milestoneAmounts.length, "Invalid milestones");
+
+         roleNFT = IRoleNFT(_roleNFTAddress);
+        
+        // Verify that company address has a company role
+        require(roleNFT.hasRoleNFT(_company), "No Company NFT");
+        require(keccak256(abi.encodePacked(roleNFT.getUserRole(_company))) == keccak256(abi.encodePacked("Company")), "Not company role");
 
         uint256 totalMilestoneAmounts;
         for (uint256 i = 0; i < _milestoneAmounts.length; i++) {
@@ -216,7 +237,6 @@ contract Scholarship is ReentrancyGuard {
         verifier = IGroth16Verifier(_verifierAddress);
     }
 
-    // Keep core functions but remove field-of-study related code
     function applyForScholarship(
             uint[2] memory a,
             uint[2][2] memory b,
@@ -228,14 +248,16 @@ contract Scholarship is ReentrancyGuard {
         bool isValid = verifier.verifyProof(a, b, c, input);
         require(isValid, "Invalid ZK proof");
         
-        // Check if the sender has a student role
-        require(roleNFT.hasRoleNFT(msg.sender), "No role NFT found");
+
+        require(roleNFT.hasRoleNFT(msg.sender), "No role");
         require(keccak256(abi.encodePacked(roleNFT.getUserRole(msg.sender))) == keccak256(abi.encodePacked("Student")), "Not a student role");
         
         StudentApplication storage application = studentApplications[msg.sender];
         require(application.studentAddress == address(0), "Already applied");
         
         application.studentAddress = msg.sender;
+        uint256 impactScore = input[1];
+        application.impactScore = impactScore;
         applicants.push(msg.sender);
         emit StudentApplied(msg.sender);
     }
@@ -259,7 +281,6 @@ contract Scholarship is ReentrancyGuard {
         _completeMilestone(_student, _milestoneId);
     }
 
-    // Internal function to complete milestone
     function _completeMilestone(address _student, uint256 _milestoneId) internal {
         require(_milestoneId < milestones.length, "Invalid milestone");
         StudentApplication storage application = studentApplications[_student];
@@ -275,8 +296,6 @@ contract Scholarship is ReentrancyGuard {
         _updateScholarshipStatus();
     }
 
-    
-    // Internal function to release funds
     function releaseMilestoneFunds(address _student, uint256 _milestoneId) internal {
         require(_milestoneId < milestones.length, "Invalid milestone");
         StudentApplication storage application = studentApplications[_student];
@@ -297,7 +316,6 @@ contract Scholarship is ReentrancyGuard {
         _updateScholarshipStatus(); 
     }
 
-    // Keep helper functions except field-of-study related ones
     function getTotalMilestones() public view returns (uint256) {
         return milestones.length;
     }
@@ -328,7 +346,6 @@ contract Scholarship is ReentrancyGuard {
     function checkUpkeep(bytes calldata) external view override returns (bool upkeepNeeded, bytes memory performData) {
         if (status != ScholarshipStatus.InProgress) return (false, "");
 
-        // Check for approved students with completed milestones that need funds released
         bool[] memory studentNeedsFunds = new bool[](approvedStudents.length);
         uint256[] memory milestoneIndices = new uint256[](approvedStudents.length);
         address[] memory studentsToProcess = new address[](approvedStudents.length);
@@ -394,7 +411,6 @@ contract Scholarship is ReentrancyGuard {
         }
     }
 
-    // Internal functions
     function _updateScholarshipStatus() private {
         bool allCompleted = true;
         bool allFundsReleased = true;

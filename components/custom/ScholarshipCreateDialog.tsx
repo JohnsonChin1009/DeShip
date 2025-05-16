@@ -159,19 +159,8 @@ export function ScholarshipCreateDialog({
 
       const additionalRequirements = data.eligibility.additionalRequirements || "";
 
-      // Detect OS and use appropriate provider
-      let provider;
-      if (navigator.platform.includes('Win')) {
-        // Windows - use BrowserProvider
-        provider = new ethers.BrowserProvider(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-      } else {
-        // Mac/Linux - use JsonRpcProvider
-        provider = new ethers.JsonRpcProvider("https://sepolia-rpc.scroll.io/");
-      }
-
-      // const provider = new ethers.BrowserProvider(window.ethereum);
-      // await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
       const signer = await provider.getSigner();
 
       const contract = new ethers.Contract(scholarshipFactory_CA, scholarshipFactory_ABI, signer);

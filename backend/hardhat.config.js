@@ -5,7 +5,19 @@ dotenv.config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 const config = {
-  solidity: '0.8.28',
+  solidity: {
+    compilers: [
+      {
+        version: '0.8.28',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1,
+          },
+        },
+      }
+    ]
+  },
   paths: {
     sources: './contracts', // Path to your contracts
     tests: './test', // Path to your test files
