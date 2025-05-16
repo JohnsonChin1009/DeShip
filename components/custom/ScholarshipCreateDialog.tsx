@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ethers } from 'ethers';
 import { scholarshipFactory_CA, scholarshipFactory_ABI } from "@/lib/contractABI";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -159,33 +158,10 @@ export function ScholarshipCreateDialog({
       const deadlineTimestamp = Math.floor(new Date(data.deadline).getTime() / 1000);
 
       const additionalRequirements = data.eligibility.additionalRequirements || "";
+      const provider = new ethers.JsonRpcProvider("https://sepolia-rpc.scroll.io/")
 
-      try {
-        await fetch('/api/createScholarship', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            title: data.title,
-            description: data.description,
-            gpa: data.eligibility.gpa,
-            additionalRequirements,
-            amount: data.amount,
-            deadline: data.deadline,
-            milestones: {
-              titles: milestoneTitles,
-              percentages: [data.milestones.percent1, data.milestones.percent2, data.milestones.percent3],
-              amounts: milestoneAmounts
-            }
-          }),
-        });
-      } catch (error) {
-        console.error("Failed to log scholarship creation:", error);
-      }
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
+      // const provider = new ethers.BrowserProvider(window.ethereum);
+      // await window.ethereum.request({ method: "eth_requestAccounts" });
       const signer = await provider.getSigner();
 
       const contract = new ethers.Contract(scholarshipFactory_CA, scholarshipFactory_ABI, signer);
