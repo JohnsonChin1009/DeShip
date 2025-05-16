@@ -9,6 +9,7 @@ import TechStack from "@/components/custom/tech-stack";
 import Team from "@/components/custom/team";
 import Footer from "@/components/custom/footer";
 import IntroAnimation from "@/components/custom/intro-animation";
+import { ParticlesBackground } from "@/components/ui/particles-background";
 
 export default function HomePage() {
   const [showIntro, setShowIntro] = useState(true);
@@ -36,12 +37,13 @@ export default function HomePage() {
         <main>
           <section
             id="hero"
-            className="min-h-screen px-4 md:px-8 lg:px-16 py-20 flex flex-col justify-center relative"
+            className="min-h-screen px-4 md:px-8 lg:px-16 py-20 flex flex-col justify-center relative overflow-hidden"
           >
-            <div className="max-w-7xl mx-auto">
+            <ParticlesBackground />
+            <div className="max-w-7xl mx-auto relative z-10">
               <div className="space-y-10">
                 <div className="space-y-6">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-white">
                     deship makes scholarships more{" "}
                     <WordRotate
                       duration={3000}
@@ -49,7 +51,7 @@ export default function HomePage() {
                       words={["EQUAL", "SIMPLE", "TRANSPARENT"]}
                     />
                   </h1>
-                  <p className="text-xl md:text-2xl text-white max-w-3xl font-medium">
+                  <p className="text-xl md:text-2xl text-white/90 max-w-3xl font-medium">
                     A decentralized platform revolutionizing scholarship applications through blockchain technology and zero-knowledge proofs.
                   </p>
                 </div>
