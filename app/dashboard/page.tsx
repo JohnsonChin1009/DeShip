@@ -138,7 +138,7 @@ export default function DashboardPage() {
     <main className="min-h-screen flex">
       <Sidebar
         username={user?.username || "Steve"}
-        profileImage={user?.avatar_url || ""}
+        profileImage={user?.avatar_url || "https://avatars.githubusercontent.com/u/107231772?v=4"}
         role={role}
         isOpen={isSidebarOpen}
         setIsOpen={toggleSidebar}
