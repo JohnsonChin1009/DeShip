@@ -5,36 +5,185 @@ a decentralized web platform that ensures fairness, accountable and on-time scho
 Traditional scholarships undergo multiple screening processes, resulting in late confirmation of scholarship towards multiple students. Students should be able to 
 
 ## Main Features
-- User roles are depicted by the NFTs that they choose when they first sign in using their wallet.
-- Users are able to prove their demographic profile without revealing them on-chain using zkProofs.
-- [can add as you see fit]
+
+### Student Features
+- **Profile Management**:
+  - Student able to create and update personal profile
+  - Student able to add academic details and achievements
+
+- **Scholarship Discovery**:
+  - Student able to browse available scholarships
+  - Student able to view detailed scholarship information
+  - Student able to apply scholarship
+
+- **Application System**:
+  - Student able to submit scholarship applications
+  - Student able to upload required informations
+
+- **Scholarship Dashboard**:
+  - Student able to view active scholarships
+  - Student able to track milestone progress
+
+### Company Features
+- **Profile Management**:
+  - Company able to create and update company profile
+  - Company able to add company details and industry
+
+- **Scholarship Management**:
+  - Company able to create new scholarships
+  - Company able to set eligibility criteria
+  - Company able to define milestone requirements
+  - Company able to set funding parameters
+  - Company able to edit existing scholarships
+
+- **Application Management**:
+  - Company able to review student applications
+  - Company able to process applications (approve/reject)
+  - Company able to track application status
+  - Company able to manage applications
+
+- **Analytics Dashboard**:
+  - Company able to view total scholarships created
+  - Company able to monitor active scholars
+  - Company able to track funding distribution
+  - Company able to analyze application trends
+
+### Additional Features
+- **Privy Authentication**:
+  - Privy wallet-based authentication system
+  - Secure role-based access control
+  - Encrypted data storage and transmission
+
+- **Zero-Knowledge Proofs**:
+  - Student able to prove eligibility without revealing sensitive data
+  - Privacy-preserving demographic verification
+  - Secure identity verification
+
+- **Chainlink Automation**:
+  - Automated milestone verification
+  - Automatic fund distribution
+  - Automated scholarship status updates
+  - Real-time payment processing
 
 ## To run the application locally
 
-1. First clone the repository to your local machine, open up a terminal and run:
-```bash
-git clone https://github.com/JohnsonChin1009/DeShip.git
-```
+### Prerequisites
+1. **Node.js and npm**
+   - Install Node.js (v18 or higher) from [nodejs.org](https://nodejs.org)
+   - Verify installation:
+     ```bash
+     node --version
+     npm --version
+     ```
 
-2. Then, navigate to the cloned repository on your machine
-```bash
-cd DeShip
-```
+2. **MetaMask Wallet**
+   - Install [MetaMask](https://metamask.io/) browser extension
+   - Create or import a wallet
+   - Add Hardhat Network:
+     - Network Name: Hardhat Local
+     - RPC URL: http://127.0.0.1:8545
+     - Chain ID: 31337
+     - Currency Symbol: ETH
 
-3. Install the dependencies (This project uses npm)
-```bash
-npm install
-```
+3. **Git**
+   - Install Git from [git-scm.com](https://git-scm.com)
+   - Verify installation:
+     ```bash
+     git --version
+     ```
 
-4. Create the .env file from .env.example, and add in environment variables accordingly
-```bash
-mv .env.example .env
-```
+### Setup Steps
 
-5. Run the project
-```
-npm run dev
-```
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/JohnsonChin1009/DeShip.git
+   cd DeShip
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   # Install frontend dependencies
+   npm install
+
+   # Install backend dependencies
+   cd backend
+   npm install
+   cd ..
+   ```
+
+3. **Environment Configuration**
+   ```bash
+   # Create .env file
+   cp .env.example .env
+   ```
+   
+   Add the following to your `.env` file:
+   ```
+   # Frontend Environment Variables
+   NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+   NEXT_PUBLIC_HARDHAT_RPC_URL=http://127.0.0.1:8545
+   NEXT_PUBLIC_NETWORK_ID=31337
+
+   # Backend Environment Variables
+   PRIVATE_KEY=your_wallet_private_key
+   SEPOLIA_RPC_URL=your_sepolia_rpc_url
+   ETHERSCAN_API_KEY=your_etherscan_api_key
+   ```
+
+4. **Start Local Blockchain**
+   ```bash
+   # Start Hardhat node in a new terminal
+   cd backend
+   npx hardhat node
+   ```
+
+5. **Deploy Smart Contracts**
+   ```bash
+   # In a new terminal
+   cd backend
+   npx hardhat run scripts/deploy.js --network localhost
+   ```
+   
+   After deployment, update the contract addresses in `lib/contractABI.ts`:
+   ```typescript
+   export const roleNFT_CA = "deployed_role_nft_address";
+   export const scholarshipFactory_CA = "deployed_factory_address";
+   export const automationHandler_CA = "deployed_handler_address";
+   ```
+
+6. **Import Test Accounts**
+   - Copy private keys from Hardhat node output
+   - Import them into MetaMask using "Import Account"
+   - These accounts will have test ETH for development
+
+7. **Start Development Server**
+   ```bash
+   # In a new terminal
+   npm run dev
+   ```
+
+8. **Access the Application**
+   - Open [http://localhost:3000](http://localhost:3000)
+   - Connect your MetaMask wallet
+   - Choose your role (Company/Student)
+   - Start using the application!
+
+### Troubleshooting
+
+1. **MetaMask Connection Issues**
+   - Ensure you're on the Hardhat network
+   - Check if you have enough test ETH
+   - Try resetting your MetaMask account
+
+2. **Contract Deployment Failures**
+   - Verify Hardhat node is running
+   - Check if port 8545 is available
+   - Ensure you have the correct private key in .env
+
+3. **Frontend Errors**
+   - Clear browser cache
+   - Check console for specific errors
+   - Verify all environment variables are set
 
 ### Contracts Deployed
 1. NFT Contract for User Role [Click Here!](https://sepolia.scrollscan.com/address/0x3E16F77f78939AC48bE10112383d376D425F768D)
