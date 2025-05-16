@@ -11,15 +11,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { fieldOfStudyOptions, industryOptions, academicProgressionOptions } from "@/lib/types/profile";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 interface SignUpFormProps {
   role: string;
   walletAddress?: string;
 }
 
+type StudentFormValues = {
+  walletAddress: string;
+  username: string;
+  bio: string;
+  profileImage?: File;
+  fieldOfStudy: string;
+  academicProgression: string;
+  portfolioURL?: string;
+};
+
+
+type CompanyFormValues = {
+  walletAddress: string;
+  username: string;
+  bio: string;
+  profileImage?: File;
+  websiteURL: string;
+  industry: string[];
+};
+
 export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  // Access the UserContext to update user data directly
+  const { setUser } = useUser();
 
   const studentFormSchema = z.object({
     walletAddress: z.string().min(1, "Wallet address is required"),
@@ -66,9 +89,8 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
   });
 
   async function onSubmit(
-    values: z.infer<typeof studentFormSchema | typeof companyFormSchema>
+    values: StudentFormValues | CompanyFormValues
   ) {
-
     const result = await fetch("/api/createUser", {
       method: "POST",
       headers: {
@@ -79,16 +101,52 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
     
     if (!result.ok) {
       const errorData = await result.json();
-
       toast({title: "Uh Oh! Something went wrong!", description: errorData.message})
       return;
     }
 
+    const responseData = await result.json();
+    
+    // Store data in localStorage before redirecting
+    localStorage.setItem("userRole", role);
+    localStorage.setItem("walletAddress", walletAddress || "");
+    
+    const userData = {
+      username: values.username,
+      bio: values.bio,
+      txHash: responseData.txHash
+    };
+    localStorage.setItem("userData", JSON.stringify(userData));
+
+    // Create user profile object to update UserContext directly
+    const userProfile = {
+      wallet_address: walletAddress || "",
+      username: values.username,
+      description: values.bio,
+      role: role as "Student" | "Company",
+      // Add role-specific fields using type guards
+      ...(role === "Student" && 'fieldOfStudy' in values ? {
+        field_of_study: values.fieldOfStudy,
+        academic_progression: values.academicProgression,
+        portfolio_url: values.portfolioURL,
+      } : role === "Company" && 'websiteURL' in values ? {
+        website_url: values.websiteURL,
+        industry: values.industry,
+      } : {}),
+    };
+    
+    // Update UserContext directly with the new user data
+    setUser(userProfile);
+
+    // Cache this data in sessionStorage
+    if (typeof window !== 'undefined') {
+      const cacheKey = `${walletAddress}-${role}`;
+      sessionStorage.setItem(cacheKey, JSON.stringify(userProfile));
+    }
+
     toast({title: "User Profile Created Succesfully!", description: "Redirecting you to the dashboard..."})
 
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 3000);
+    router.push("/dashboard");
   }
 
   return (
@@ -96,7 +154,7 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
       {role === "Student" && (
         <Form {...studentForm}>
           <form
-            onSubmit={studentForm.handleSubmit(onSubmit)}
+            onSubmit={studentForm.handleSubmit(onSubmit as any)}
             className="text-left space-y-6"
           >
             <FormField
@@ -229,7 +287,7 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
       {role == "Company" && (
         <Form {...companyForm}>
           <form
-            onSubmit={companyForm.handleSubmit(onSubmit)}
+            onSubmit={companyForm.handleSubmit(onSubmit as any)}
             className="text-left space-y-6"
           >
             <FormField

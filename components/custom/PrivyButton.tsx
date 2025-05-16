@@ -5,13 +5,19 @@ import { usePrivy } from "@privy-io/react-auth";
 import { ethers } from "ethers";
 import { roleNFT_CA, roleNFT_ABI } from "@/lib/contractABI";
 import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 export default function PrivyButton() {
   const { ready, authenticated, login, logout, user } = usePrivy();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isCheckingRole, setIsCheckingRole] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { refetchUserData, user: contextUser, setUser } = useUser();
+  const checkAttempts = useRef(0);
+  const lastCheckTime = useRef(0);
+  const previousWalletAddress = useRef<string | null>(null);
 
   // Create contract instance only once using useMemo
   const contract = useMemo(() => {
@@ -28,37 +34,151 @@ export default function PrivyButton() {
     localStorage.removeItem("userRole");
     localStorage.removeItem("walletAddress");
     localStorage.removeItem("userData");
+    
+    // Clear context user
+    setUser(null);
+    
+    // Clear session storage to prevent stale data
+    if (typeof window !== 'undefined') {
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.includes('-Student') || key.includes('-Company')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    }
+    
+    // Reset states
+    previousWalletAddress.current = null;
+    checkAttempts.current = 0;
+    
     router.refresh();
   }
 
-  // Check if user has the role NFT and redirect accordingly
+  // Detect wallet address change
   useEffect(() => {
-    if (pathname !== "/") return;
-
-    const checkAndRedirect = async () => {
-      if (authenticated && user?.wallet?.address) {
-        try {
-          const hasNFT = await contract.hasRoleNFT(user.wallet.address);
-
-          if (!hasNFT) {
-            router.replace("/sign-up");
-            return;
-          }
-
-          const role = await contract.getUserRole(user.wallet.address);
-          localStorage.setItem("userRole", role);
-          localStorage.setItem("walletAddress", user.wallet.address);
-          router.replace("/dashboard");
-          } catch (error) {
-            console.error("Error during login with Privy:", error);
-          }
+    if (ready && authenticated && user?.wallet?.address) {
+      // If wallet address changed, clear context and localStorage
+      if (previousWalletAddress.current !== null && 
+          previousWalletAddress.current !== user.wallet.address) {
+        console.log("Wallet address changed, resetting state");
+        
+        // Clear context data
+        setUser(null);
+        
+        checkAttempts.current = 0;
+        
+        // Update localStorage with new address
+        localStorage.setItem("walletAddress", user.wallet.address);
+        localStorage.removeItem("userRole");
+        
+        // Clear session storage for previous wallet
+        if (typeof window !== 'undefined') {
+          Object.keys(sessionStorage).forEach(key => {
+            if (key.includes('-Student') || key.includes('-Company')) {
+              sessionStorage.removeItem(key);
+            }
+          });
         }
       }
+      
+      // Update previous wallet address
+      previousWalletAddress.current = user.wallet.address;
+    }
+  }, [ready, authenticated, user, setUser]);
 
-      checkAndRedirect();
-    }, [authenticated, user, contract, router, pathname])
+  // Check user role and set localStorage immediately when authenticated
+  const checkUserRole = async () => {
+    if (!authenticated || !user?.wallet?.address || isCheckingRole) return;
+    
+    // We have valid context user data and it matches current wallet - no need to check
+    if (contextUser !== null && 
+        contextUser.wallet_address === user.wallet.address) {
+      return;
+    }
+    
+    const now = Date.now();
+    if (now - lastCheckTime.current < 1000) {
+      console.log("Rate limiting role check");
+      return;
+    }
+    
+    if (checkAttempts.current > 5) {
+      console.log("Exceeded maximum check attempts");
+      return;
+    }
+    
+    try {
+      setIsCheckingRole(true);
+      lastCheckTime.current = now;
+      checkAttempts.current += 1;
+      
+      // Always update localStorage with current wallet address when available
+      if (user.wallet.address) {
+        localStorage.setItem("walletAddress", user.wallet.address);
+      }
+      
+      // Check if user already has a role in localStorage
+      const existingRole = localStorage.getItem("userRole");
+      
+      if (existingRole && 
+          localStorage.getItem("walletAddress") === user.wallet.address) {
+        console.log("Found existing role:", existingRole);
+        
+        await refetchUserData();
+        
+        if (pathname === "/" || pathname === "/sign-up") {
+          router.replace("/dashboard");
+        }
+        return;
+      }
+      
+      const hasNFT = await contract.hasRoleNFT(user.wallet.address);
 
-  // Function to close dropdown when clicking outside (after authenicated)
+      if (!hasNFT) {
+        // if user doesn't have an NFT
+        localStorage.removeItem("userRole");
+        
+        if (pathname !== "/sign-up") {
+          router.replace("/sign-up");
+        }
+        return;
+      }
+
+      const role = await contract.getUserRole(user.wallet.address);
+      localStorage.setItem("userRole", role);
+      
+      // Refresh user data in context
+      await refetchUserData();
+      
+      if (pathname === "/" || pathname === "/sign-up") {
+        router.replace("/dashboard");
+      }
+      
+      checkAttempts.current = 0;
+    } catch (error) {
+      console.error("Error checking user role:", error);
+    } finally {
+      setIsCheckingRole(false);
+    }
+  };
+
+  // Run role check whenever authentication or user changes
+  useEffect(() => {
+    // Only run check once Privy is ready and authenticated
+    if (ready && authenticated && user?.wallet?.address) {
+      const shouldCheck = 
+        contextUser === null || 
+        contextUser.wallet_address !== user.wallet.address;
+        
+      if (shouldCheck) {
+        checkUserRole();
+      } else {
+        checkAttempts.current = 0;
+      }
+    }
+  }, [authenticated, user, ready, contextUser]);
+
+  
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

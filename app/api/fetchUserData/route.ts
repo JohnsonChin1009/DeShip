@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
 
 // GET endpoint to fetch all students
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
   
   try {
