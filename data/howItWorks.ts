@@ -2,7 +2,7 @@ export const stepsData = [
     {
         id: "01",
         title: "Authenticate with Crypto Wallet",
-        image: "https://media1.tenor.com/m/aXwM9V7a8JoAAAAd/100x-memecoin.gif",
+        image: "/Connect_Wallet.gif",
         description: "Sign in securely with your crypto wallet. This ensures a seamless and secure experience."
     },
     {

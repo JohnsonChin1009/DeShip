@@ -21,21 +21,24 @@ export default function HowItWorks() {
                         </AccordionTrigger>
                         <AccordionContent className="text-base lg:min-h-[100%]">
                             <div className="flex flex-col gap-10 py-2 md:py-0 md:flex-row justify-between lg:flex-col lg:items-center lg:text-start">
-                                <div className="md:flex md:flex-col justify-between md:max-w-[40%] md:py-2 lg:text-xl lg:font-medium lg:max-w-[100%]"> 
+                                <div className="md:flex md:flex-col justify-between md:max-w-[40%] md:py-2 lg:text-xl lg:font-medium lg:max-w-[100%]">
                                     <p className="text-start">{step.description}</p>
                                     <p className="italic text-[#D8D8D8] hidden md:block lg:hidden">{step.secondDescription}</p>
                                 </div>
-                                <div className="self-center border-2 border-stroke w-[300px] md:w-[400px] lg:w-[600px] lg:h-[400px] h-[300px] relative"> {/* Content in the form of GIF/Image */}
-                                    <Image 
-                                        src={step.image}
-                                        alt={step.title}
-                                        fill
-                                        objectFit="contain"
-                                        className="object-contain"
-                                    />
-                                </div> 
+                                <div className="relative group">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+                                    <div className="relative bg-black/90 rounded-lg p-1 w-[300px] md:w-[400px] lg:w-[600px] lg:h-[400px] h-[300px] overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-lg"></div>
+                                        <Image
+                                            src={step.image}
+                                            alt={step.title}
+                                            fill
+                                            className="object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+                                </div>
                                 <p className="italic text-[#D8D8D8] md:hidden lg:block">{step.secondDescription}</p>
-                            </div>      
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 ))}
