@@ -158,7 +158,17 @@ export function ScholarshipCreateDialog({
       const deadlineTimestamp = Math.floor(new Date(data.deadline).getTime() / 1000);
 
       const additionalRequirements = data.eligibility.additionalRequirements || "";
-      const provider = new ethers.JsonRpcProvider("https://sepolia-rpc.scroll.io/")
+
+      // Detect OS and use appropriate provider
+      let provider;
+      if (navigator.platform.includes('Win')) {
+        // Windows - use BrowserProvider
+        provider = new ethers.BrowserProvider(window.ethereum);
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+      } else {
+        // Mac/Linux - use JsonRpcProvider
+        provider = new ethers.JsonRpcProvider("https://sepolia-rpc.scroll.io/");
+      }
 
       // const provider = new ethers.BrowserProvider(window.ethereum);
       // await window.ethereum.request({ method: "eth_requestAccounts" });
