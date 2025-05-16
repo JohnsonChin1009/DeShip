@@ -238,27 +238,22 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface  {
     }
 
     function applyForScholarship(
-            uint[2] memory a,
-            uint[2][2] memory b,
-            uint[2] memory c,
-            uint[4] memory input
+        uint256 impactScore
     ) public isOpen {
         require(block.timestamp < deadline, "Deadline passed");
-
-        bool isValid = verifier.verifyProof(a, b, c, input);
-        require(isValid, "Invalid ZK proof");
-        
-
         require(roleNFT.hasRoleNFT(msg.sender), "No role");
-        require(keccak256(abi.encodePacked(roleNFT.getUserRole(msg.sender))) == keccak256(abi.encodePacked("Student")), "Not a student role");
-        
+        require(
+            keccak256(abi.encodePacked(roleNFT.getUserRole(msg.sender))) == keccak256(abi.encodePacked("Student")),
+            "Not a student role"
+        );
+
         StudentApplication storage application = studentApplications[msg.sender];
         require(application.studentAddress == address(0), "Already applied");
-        
+
         application.studentAddress = msg.sender;
-        uint256 impactScore = input[1];
         application.impactScore = impactScore;
         applicants.push(msg.sender);
+
         emit StudentApplied(msg.sender);
     }
 
@@ -277,7 +272,7 @@ contract Scholarship is ReentrancyGuard, AutomationCompatibleInterface  {
         emit StudentApproved(_student);
     }
 
-    function completeMilestone(address _student, uint256 _milestoneId) public onlyCompany nonReentrant {
+    function completeMilestone(address _student, uint256 _milestoneId) public nonReentrant {
         _completeMilestone(_student, _milestoneId);
     }
 
