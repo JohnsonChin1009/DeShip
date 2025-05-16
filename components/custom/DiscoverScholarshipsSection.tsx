@@ -9,6 +9,8 @@ import {
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 
+const statusMapping = ["Open", "In Progress", "Closed", "Completed"];
+
 interface ScholarshipData {
   address: string;
   title: string;
@@ -42,7 +44,8 @@ export default function DiscoverScholarshipSection() {
             const deadline = new Date(
               Number(await contract.deadline()) * 1000
             ).toLocaleDateString();
-            const status = (await contract.status()) ? "Open" : "Closed";
+            const statusNum = Number(await contract.status());
+            const status = statusMapping[statusNum];
 
             return { address: addr, title, company, totalAmount, deadline, status };
           })
