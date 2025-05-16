@@ -18,6 +18,7 @@ export default function PrivyButton() {
   const checkAttempts = useRef(0);
   const lastCheckTime = useRef(0);
   const previousWalletAddress = useRef<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Create contract instance only once using useMemo
   const contract = useMemo(() => {
@@ -28,6 +29,7 @@ export default function PrivyButton() {
   }, []);
 
   const handleLogout = async () => {
+    setIsLoading(true);
     await logout();
 
     setDropdownOpen(false);
@@ -51,6 +53,7 @@ export default function PrivyButton() {
     previousWalletAddress.current = null;
     checkAttempts.current = 0;
     
+    setIsLoading(false);
     router.refresh();
   }
 
@@ -199,6 +202,14 @@ export default function PrivyButton() {
     return (
       <button disabled className="primary-button">
         Loading...
+      </button>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <button disabled className="primary-button">
+        Disconnecting...
       </button>
     );
   }
