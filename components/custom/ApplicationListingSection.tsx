@@ -22,6 +22,7 @@ interface ApplicantData {
     fieldOfStudy: string;
     status: string;
     fundsWithdrawn: string;
+    impactScore: number;
 }
 
 // Interface for scholarship data
@@ -44,16 +45,21 @@ const ApplicantsTableSkeleton = () => {
                 <table className="w-full border-collapse border border-gray-200 min-w-max">
                     <thead>
                         <tr className="bg-gray-100">
+                            <th className="border px-4 py-2 text-left">Rank</th>
                             <th className="border px-4 py-2 text-left">Username</th>
                             <th className="border px-4 py-2 text-left">Field of Study</th>
                             <th className="border px-4 py-2 text-left">Status</th>
                             <th className="border px-4 py-2 text-left">Funds Withdrawn (ETH)</th>
+                            <th className="border px-4 py-2 text-left">Impact Score</th>
                             <th className="border px-2 py-2 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {Array(5).fill(0).map((_, index) => (
                             <tr key={index} className="hover:bg-gray-50">
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-5 w-8" />
+                                </td>
                                 <td className="border px-4 py-2">
                                     <Skeleton className="h-5 w-32" />
                                 </td>
@@ -62,6 +68,9 @@ const ApplicantsTableSkeleton = () => {
                                 </td>
                                 <td className="border px-4 py-2">
                                     <Skeleton className="h-6 w-20 rounded-md" />
+                                </td>
+                                <td className="border px-4 py-2">
+                                    <Skeleton className="h-5 w-16" />
                                 </td>
                                 <td className="border px-4 py-2">
                                     <Skeleton className="h-5 w-16" />
@@ -100,6 +109,9 @@ export default function ApplicationListingSection() {
     const [scholarships, setScholarships] = useState<ScholarshipData[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedScholarship, setSelectedScholarship] = useState<string>('');
+    const [approvalLoading, setApprovalLoading] = useState<string | null>(null);
+    const [approvalError, setApprovalError] = useState<string | null>(null);
+    const [hasApprovedStudent, setHasApprovedStudent] = useState(false);
 
     // Fetch company scholarships
     useEffect(() => {
@@ -196,6 +208,7 @@ export default function ApplicationListingSection() {
                         const studentApplication = await scholarshipContract.studentApplications(address);
                         const isApproved = studentApplication.isApproved;
                         const fundsWithdrawn = ethers.formatEther(studentApplication.fundsWithdrawn);
+                        const impactScore = parseInt(studentApplication.impactScore.toString());
                         
                         // Get student profile data from database
                         const response = await fetch('/api/fetchUserData', {
@@ -217,7 +230,8 @@ export default function ApplicationListingSection() {
                                 username: data.data.username || 'Unknown',
                                 fieldOfStudy: data.data.field_of_study || 'Not specified',
                                 status: isApproved ? 'Approved' : 'Pending',
-                                fundsWithdrawn: fundsWithdrawn
+                                fundsWithdrawn: fundsWithdrawn,
+                                impactScore: impactScore
                             };
                         } else {
                             return {
@@ -225,13 +239,21 @@ export default function ApplicationListingSection() {
                                 username: 'Unknown',
                                 fieldOfStudy: 'Not specified',
                                 status: isApproved ? 'Approved' : 'Pending',
-                                fundsWithdrawn: fundsWithdrawn
+                                fundsWithdrawn: fundsWithdrawn,
+                                impactScore: impactScore
                             };
                         }
                     })
                 );
                 
-                setApplicants(applicantsData);
+                // Sort applicants by impact score in descending order
+                const sortedApplicants = applicantsData.sort((a, b) => b.impactScore - a.impactScore);
+                
+                // Check if any student is already approved
+                const approvedExists = sortedApplicants.some(applicant => applicant.status === 'Approved');
+                setHasApprovedStudent(approvedExists);
+                
+                setApplicants(sortedApplicants);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching applicants:", error);
@@ -241,6 +263,56 @@ export default function ApplicationListingSection() {
         
         fetchApplicants();
     }, [selectedScholarship]);
+
+    // Function to approve a student
+    const approveStudent = async (studentAddress: string) => {
+        if (!selectedScholarship || !studentAddress) return;
+        
+        try {
+            setApprovalLoading(studentAddress);
+            setApprovalError(null);
+            
+            // Get wallet from localStorage
+            const walletAddress = localStorage.getItem('walletAddress');
+            if (!walletAddress) {
+                setApprovalError("No wallet address found. Please connect your wallet.");
+                setApprovalLoading(null);
+                return;
+            }
+            
+            // Connect to provider with signer
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            
+            // Create contract instance with signer
+            const scholarshipContract = new ethers.Contract(
+                selectedScholarship,
+                scholarship_ABI,
+                signer
+            );
+            
+            // Call approveStudent function on the contract
+            const tx = await scholarshipContract.approveStudent(studentAddress);
+            await tx.wait();
+            
+            // Update the applicants list after approval
+            const updatedApplicants = applicants.map(applicant => {
+                if (applicant.walletAddress === studentAddress) {
+                    return { ...applicant, status: 'Approved' };
+                }
+                return applicant;
+            });
+            
+            setApplicants(updatedApplicants);
+            setHasApprovedStudent(true);
+            setApprovalLoading(null);
+            
+        } catch (error) {
+            console.error("Error approving student:", error);
+            setApprovalError("Failed to approve student. Please try again.");
+            setApprovalLoading(null);
+        }
+    };
 
     const filteredApplicants = applicants.filter((applicant) =>
         applicant.username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -324,39 +396,79 @@ export default function ApplicationListingSection() {
                                 <table className="w-full border-collapse border border-gray-200 min-w-max">
                                     <thead>
                                         <tr className="bg-gray-100">
+                                            <th className="border px-4 py-2 text-left">Rank</th>
                                             <th className="border px-4 py-2 text-left">Username</th>
                                             <th className="border px-4 py-2 text-left">Field of Study</th>
                                             <th className="border px-4 py-2 text-left">Status</th>
                                             <th className="border px-4 py-2 text-left">Funds Withdrawn (ETH)</th>
+                                            <th className="border px-4 py-2 text-left">Impact Score</th>
                                             <th className="border px-2 py-2 text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {paginatedApplicants.length > 0 ? (
-                                            paginatedApplicants.map((applicant, index) => (
-                                                <tr key={index} className="hover:bg-gray-50">
-                                                    <td className="border px-4 py-2">{applicant.username}</td>
-                                                    <td className="border px-4 py-2">{applicant.fieldOfStudy}</td>
-                                                    <td className="border px-4 py-2">
-                                                        <span className={`px-2 py-1 rounded 
-                                                            ${applicant.status === "Pending" ? "bg-yellow-100 text-yellow-800" : 
-                                                            "bg-green-100 text-green-800"}`}>
-                                                            {applicant.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="border px-4 py-2">{applicant.fundsWithdrawn}</td>
-                                                    <td className="border px-2 py-2 text-center">
-                                                        <Button variant="outline" size="sm" asChild>
-                                                            <Link href={`/company/applicant-details/${applicant.walletAddress}?scholarship=${selectedScholarship}`}>
-                                                                <Eye className="inline mr-1 w-4 h-4" /> View Details
-                                                            </Link>
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            ))
+                                            paginatedApplicants.map((applicant, index) => {
+                                                const rank = (currentPage - 1) * itemsPerPage + index + 1;
+                                                const isApproved = applicant.status === 'Approved';
+                                                const isLoading = approvalLoading === applicant.walletAddress;
+                                                return (
+                                                    <tr key={index} className={`hover:bg-gray-50 ${isApproved ? 'bg-green-50' : ''}`}>
+                                                        <td className="border px-4 py-2">
+                                                            <div className={`flex justify-center items-center w-8 h-8 rounded-full ${isApproved ? 'bg-green-200 text-green-800' : 'bg-blue-100 text-blue-800'} font-semibold mx-auto`}>
+                                                                {rank}
+                                                            </div>
+                                                        </td>
+                                                        <td className="border px-4 py-2">{applicant.username}</td>
+                                                        <td className="border px-4 py-2">{applicant.fieldOfStudy}</td>
+                                                        <td className="border px-4 py-2">
+                                                            <span className={`px-2 py-1 rounded 
+                                                                ${applicant.status === "Pending" ? "bg-yellow-100 text-yellow-800" : 
+                                                                "bg-green-100 text-green-800"}`}>
+                                                                {applicant.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="border px-4 py-2">{applicant.fundsWithdrawn}</td>
+                                                        <td className="border px-4 py-2">
+                                                            <span className="font-medium">{applicant.impactScore}</span>
+                                                        </td>
+                                                        <td className="border px-2 py-2 text-center">
+                                                            <div className="flex justify-center space-x-2">
+                                                                <Button variant="outline" size="sm" asChild>
+                                                                    <Link href={`/company/applicant-details/${applicant.walletAddress}?scholarship=${selectedScholarship}`}>
+                                                                        <Eye className="inline mr-1 w-4 h-4" /> View
+                                                                    </Link>
+                                                                </Button>
+                                                                
+                                                                {!isApproved && !hasApprovedStudent && (
+                                                                    <Button 
+                                                                        variant="default" 
+                                                                        size="sm" 
+                                                                        className="bg-green-600 hover:bg-green-700"
+                                                                        onClick={() => approveStudent(applicant.walletAddress)}
+                                                                        disabled={isLoading || hasApprovedStudent}
+                                                                    >
+                                                                        {isLoading ? (
+                                                                            <>
+                                                                                <span className="animate-spin inline-block mr-1">⟳</span> 
+                                                                                Approving...
+                                                                            </>
+                                                                        ) : (
+                                                                            "Approve"
+                                                                        )}
+                                                                    </Button>
+                                                                )}
+                                                                
+                                                                {isApproved && (
+                                                                    <span className="text-sm text-green-600 font-medium">Approved ✓</span>
+                                                                )}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
                                         ) : (
                                             <tr>
-                                                <td colSpan={5} className="border px-4 py-2 text-center text-gray-500">
+                                                <td colSpan={7} className="border px-4 py-2 text-center text-gray-500">
                                                     No applicants found for this scholarship
                                                 </td>
                                             </tr>
@@ -364,6 +476,21 @@ export default function ApplicationListingSection() {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {approvalError && (
+                                <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                                    {approvalError}
+                                </div>
+                            )}
+                            
+                            {hasApprovedStudent && (
+                                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>One student has already been approved for this scholarship. No additional approvals are possible.</span>
+                                </div>
+                            )}
 
                             {paginatedApplicants.length > 0 && (
                                 <div className="flex flex-col sm:flex-row items-center justify-between mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
