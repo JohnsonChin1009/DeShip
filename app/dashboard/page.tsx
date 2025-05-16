@@ -17,6 +17,7 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import { usePrivy } from "@privy-io/react-auth";
 
 // Create a skeleton for the entire dashboard layout
 const FullPageSkeleton = () => {
@@ -107,6 +108,7 @@ export default function DashboardPage() {
   const { user, loading } = useUser();
   const [selectedTab, setSelectedTab] = useState<string>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const { ready, authenticated } = usePrivy();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -119,7 +121,7 @@ export default function DashboardPage() {
     }
   }, []);
 
-  if (loading) {
+  if (loading || !ready || !authenticated) {
     return <FullPageSkeleton />;
   }
 
