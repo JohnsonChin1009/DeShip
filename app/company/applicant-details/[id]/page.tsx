@@ -10,6 +10,8 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { ethers } from "ethers";
 import { scholarship_ABI } from "@/lib/contractABI";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface StudentProfile {
   username: string;
@@ -32,7 +34,9 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [scholarshipTitle, setScholarshipTitle] = useState<string>("");
   const [avatarImages, setAvatarImages] = useState<string[]>([]);
+  const [approving, setApproving] = useState<boolean>(false);
 
+  const { toast } = useToast();
   const searchParams = useSearchParams();
   const scholarshipAddress = searchParams.get("scholarship");
   const studentAddress = params.id;
@@ -116,12 +120,19 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
   // Function to approve student
   const handleApproveStudent = async () => {
     if (!studentAddress || !scholarshipAddress) return;
+    
+    setApproving(true);
 
     try {
       // Get wallet from localStorage
       const walletAddress = localStorage.getItem('walletAddress');
       if (!walletAddress) {
-        alert("Please connect your wallet first");
+        toast({
+          title: "Wallet not connected",
+          description: "Please connect your wallet first",
+          variant: "destructive"
+        });
+        setApproving(false);
         return;
       }
 
@@ -136,19 +147,39 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
           signer
         );
 
+        toast({
+          title: "Processing",
+          description: "Approving student application...",
+        });
+
         // Call the approveStudent function
         const tx = await scholarshipContract.approveStudent(studentAddress);
         
         await tx.wait();
         
         setIsApproved(true);
-        alert("Student approved successfully!");
+        toast({
+          title: "Success!",
+          description: "Student has been approved successfully",
+          variant: "default",
+          className: "bg-green-500 text-white",
+        });
       } else {
-        alert("Please install MetaMask or another Ethereum wallet");
+        toast({
+          title: "Wallet not detected",
+          description: "Please install MetaMask or another Ethereum wallet",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error("Error approving student:", error);
-      alert("Failed to approve student. See console for details.");
+      toast({
+        title: "Approval Failed",
+        description: "Failed to approve student. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setApproving(false);
     }
   };
 
@@ -185,8 +216,9 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                 size="sm" 
                 className="bg-green-600 hover:bg-green-700"
                 onClick={handleApproveStudent}
+                disabled={approving}
               >
-                <Check className="w-4 h-4 mr-1" /> Approve Student
+                <Check className="w-4 h-4 mr-1" /> {approving ? "Approving..." : "Approve Student"}
               </Button>
             )}
           </div>
@@ -245,7 +277,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                       <div>
                         <CardTitle className="text-2xl font-bold text-gray-800">{student.username}</CardTitle>
                         <CardDescription className="text-gray-600 mt-1">
-                          Here is the applicant's detail
+                          Here is the applicant&apos;s detail
                         </CardDescription>
                       </div>
                     </div>
@@ -289,6 +321,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
           )}
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

@@ -79,7 +79,7 @@ const CompanyHeader = ({ createButtonLink = "/company/create-scholarship", onRef
           <Bell className="h-8 w-8"/>
         </Button>
         
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative gap-2">
               <Globe2 className="h-5 w-5"/>
@@ -90,7 +90,7 @@ const CompanyHeader = ({ createButtonLink = "/company/create-scholarship", onRef
             <DropdownMenuItem>View Blockchain</DropdownMenuItem>
             <DropdownMenuItem>Transaction History</DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
     </>
   )
@@ -99,9 +99,9 @@ const CompanyHeader = ({ createButtonLink = "/company/create-scholarship", onRef
 const StudentHeader = () => {
   return (
     <>
-    <div>
+    {/* <div>
       Not sure what to put here
-    </div>
+    </div> */}
     </>
   )
 }
