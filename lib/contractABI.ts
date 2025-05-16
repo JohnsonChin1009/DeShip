@@ -729,7 +729,7 @@ const roleNFT_ABI = [
   },
 ];
 
-const scholarshipFactory_CA = '0x406Ef3A0fAd1B7347C45a1d4ABBb09AF7b4d203f';
+const scholarshipFactory_CA = '0xDefBfC26831268F02ecFbf20905B559E7B3373C9';
 
 const scholarshipFactory_ABI = [
     {
@@ -1346,24 +1346,9 @@ const scholarship_ABI = [
     {
       "inputs": [
         {
-          "internalType": "uint256[2]",
-          "name": "a",
-          "type": "uint256[2]"
-        },
-        {
-          "internalType": "uint256[2][2]",
-          "name": "b",
-          "type": "uint256[2][2]"
-        },
-        {
-          "internalType": "uint256[2]",
-          "name": "c",
-          "type": "uint256[2]"
-        },
-        {
-          "internalType": "uint256[4]",
-          "name": "input",
-          "type": "uint256[4]"
+          "internalType": "uint256",
+          "name": "impactScore",
+          "type": "uint256"
         }
       ],
       "name": "applyForScholarship",

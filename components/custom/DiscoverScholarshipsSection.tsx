@@ -20,6 +20,7 @@ interface ScholarshipData {
   totalAmount: string;
   deadline: string;
   status: string;
+  minGPA: number;
 }
 
 const ScholarshipCardSkeleton = () => {
@@ -62,6 +63,9 @@ export default function DiscoverScholarshipSection() {
             const contract = new ethers.Contract(addr, scholarship_ABI, provider);
             const title = await contract.title();
             const company = await contract.company();
+            // const minGPA = Number(await contract.gpa());
+            const eligibility = await contract.eligibility();
+            const minGPA = Number(eligibility[0]) / 100;
             const totalAmount = ethers.formatEther(await contract.totalAmount());
             const deadline = new Date(
               Number(await contract.deadline()) * 1000
@@ -69,7 +73,7 @@ export default function DiscoverScholarshipSection() {
             const statusNum = Number(await contract.status());
             const status = statusMapping[statusNum];
 
-            return { address: addr, title, company, totalAmount, deadline, status };
+            return { address: addr, title, company, totalAmount, deadline, status, minGPA };
           })
         );
 

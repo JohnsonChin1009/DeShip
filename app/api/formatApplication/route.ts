@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        const parsedGPA = Math.round((cgpa / 4.0) * 100);
+        const parsedGPA = cgpa * 10;
         const parsedIncome = income;
 
         // Initialize the Gemini API

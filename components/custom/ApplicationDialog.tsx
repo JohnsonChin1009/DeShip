@@ -16,8 +16,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/context/UserContext";
+import * as snarkjs from "snarkjs";
+import { ethers } from "ethers";
+import { scholarship_ABI } from "@/lib/contractABI";
 
-export default function ApplicationDialog() {
+interface ApplicationDialogProps {
+  contractAddress: string;
+  minGPA: number;
+}
+
+export default function ApplicationDialog({contractAddress, minGPA}: ApplicationDialogProps) {
     const { user } = useUser();
     const { toast } = useToast();
     const [cgpa, setCgpa] = useState("");
@@ -25,62 +33,86 @@ export default function ApplicationDialog() {
     const [statement, setStatement] = useState("");
 
     const handleSubmitApplication = async () => {
-  const numericCgpa = parseFloat(cgpa);
-  const numericIncome = parseFloat(income);
+      const numericCgpa = parseFloat(cgpa);
+      const numericIncome = parseFloat(income);
 
-  if (numericCgpa > 4.0 || numericCgpa < 0) {
-    toast({
-      variant: "destructive",
-      title: "Invalid CGPA",
-      description: "CGPA must be between 0.00 and 4.00.",
-    });
-    return;
-  }
+      if (numericCgpa > 4.0 || numericCgpa < 0) {
+        toast({
+          variant: "destructive",
+          title: "Invalid CGPA",
+          description: "CGPA must be between 0.00 and 4.00.",
+        });
+        return;
+      }
 
-  if (statement.length > 280) {
-    toast({
-      variant: "destructive",
-      title: "Personal Statement Too Long",
-      description: "Personal statement must be 280 characters or less.",
-    });
-    return;
-  }
+      if (statement.length > 280) {
+        toast({
+          variant: "destructive",
+          title: "Personal Statement Too Long",
+          description: "Personal statement must be 280 characters or less.",
+        });
+        return;
+      }
 
-  const fieldOfStudy = user?.field_of_study || "";
-  console.log("Field of Study:", fieldOfStudy);
-  const industry = "Information Technology"; // Assuming this exists on user context
+      const fieldOfStudy = user?.field_of_study || "";
+      console.log("Field of Study:", fieldOfStudy);
+      const industry = "Information Technology"; // Assuming this exists on user context
 
-  try {
-    const response = await fetch("/api/formatApplication", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cgpa: numericCgpa,
-        income: numericIncome,
-        statement,
-        fieldOfStudy,
-        industry,
-      }),
-    });
+      try {
+        const response = await fetch("/api/formatApplication", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cgpa: numericCgpa,
+            income: numericIncome,
+            statement,
+            fieldOfStudy,
+            industry,
+          }),
+        });
 
-    const result = await response.json();
-    console.log("API response:", result);
+        const result = await response.json();
+        console.log("Formatted Application Data:", result);
+        const parsedMinGPA = minGPA * 10;
 
-    toast({
-      title: "Application Submitted",
-      description: "Your scholarship application has been submitted successfully.",
-    });
-  } catch (error) {
-    console.error("Failed to submit application:", error);
-    toast({
-      variant: "destructive",
-      title: "Submission Failed",
-      description: "There was an error submitting your application. Please try again later.",
-    });
-  }
-};
+        const inputs = {
+          "minGPA": parsedMinGPA.toString(),
+          "maxIncome": "100000",
+          "gpa": result.data.payload.gpa.toString(),
+          "fieldRelevance": result.data.payload.fieldRelevance.toString(),
+          "householdIncome": result.data.payload.householdIncome.toString(),
+          "statementScore": result.data.payload.statementScore.toString(),
+        }
+
+        const { proof, publicSignals } = await snarkjs.groth16.fullProve(inputs, "main.wasm", "main.groth16.zkey");
+
+        console.log("Proof:", proof);
+        console.log("Public Signals:", publicSignals);
+
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+
+        const contract = new ethers.Contract(contractAddress, scholarship_ABI, signer);
+        const tx = await contract.applyForScholarship(publicSignals[1]);
+        await tx.wait();
+
+
+        toast({
+          title: "Application Submitted",
+          description: "Your scholarship application has been submitted successfully.",
+        });
+      } catch (error) {
+        console.error("Failed to submit application:", error);
+        toast({
+          variant: "destructive",
+          title: "Submission Failed",
+          description: "There was an error submitting your application. Please try again later.",
+        });
+      }
+  };
 
     return (
         <Dialog>
