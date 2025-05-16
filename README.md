@@ -316,6 +316,6 @@ DeShip leverages **Chainlink Automation** to automate critical actions in schola
 ### 🔍 **Upkeep Details**
 | Parameter         | Value                             |
 |------------------|-----------------------------------|
-| **Upkeep ID**     | `78658125821863182812978357463115396864169683263279217807875432969863982491630`          |
+| **Upkeep ID**     | `568783538657997219074577329414193953393060544212197530924047084999487229437`          |
 | **Contract**      | `ScholarshipAutomationHandler`               |
-| **Contract Address** | `0x8864Ef59B160E10dF7465dD78179E2419e174a59` |
+| **Contract Address** | `0x14331CcdE4041B1DeFDDC5AE56A1Dbd613Af4772` |
