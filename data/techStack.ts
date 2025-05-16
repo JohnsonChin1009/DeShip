@@ -57,9 +57,9 @@ export const techStackData = [
     },
     {
         id: "09",
-        title: "Vercel",
-        image: "/Vercel.png",
-        description: "Cloud platform for deploying frontend applications, optimized for performance, scalability, and developer experience.",
-        category: "Deployment"
+        title: "The Graph",
+        image: "/TheGraph.png",
+        description: "Decentralized protocol for indexing and querying blockchain data, enabling efficient data access and analytics for Web3 applications.",
+        category: "Blockchain"
     }
 ]
