@@ -24,6 +24,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ethers } from 'ethers';
 import { scholarship_ABI } from '@/lib/contractABI';
+import Image from 'next/image';
 // import * as snarkjs from 'snarkjs';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -667,7 +668,7 @@ const CompanyDashboard = () => {
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               {avatarImages.length > 0 ? (
-                                <img
+                                <Image
                                   src={avatarImages[avatarIndex]} 
                                   alt={username}
                                   className="w-full h-full object-cover" 
@@ -841,7 +842,7 @@ const StudentDashboard = () => {
 
     if (error) {
         if (error === "No wallet address found. Please connect your wallet.") {
-            return (
+    return (
                 <div className="flex justify-center items-center min-h-[300px] flex-col gap-4">
                     <div className="text-amber-500 font-medium">No wallet address found</div>
                     <Button 
@@ -991,10 +992,10 @@ const StudentDashboard = () => {
                                     return (
                                         <div key={scholarship.id} className="space-y-2">
                                             <div className="flex justify-between">
-                                                <div>
+            <div>
                                                     <p className="font-medium">{scholarship.title}</p>
                                                     <p className="text-sm text-muted-foreground">{companyName}</p>
-                                                </div>
+            </div>
                                                 <span className={`px-2 py-1 rounded text-xs ${
                                                     statusMapping[scholarship.status] === "Open" ? "bg-green-100 text-green-800" :
                                                     statusMapping[scholarship.status] === "In Progress" ? "bg-blue-100 text-blue-800" :

@@ -12,6 +12,7 @@ import { ethers } from "ethers";
 import { scholarship_ABI } from "@/lib/contractABI";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image";
 
 interface StudentProfile {
   username: string;
@@ -268,7 +269,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                   <div className="flex justify-between items-start">
                     <div className="flex items-center space-x-4">
                       <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-                        <img 
+                        <Image
                           src={avatarImages[parseInt(student.avatar_url) || 0]} 
                           alt={student.username} 
                           className="w-full h-full object-cover"

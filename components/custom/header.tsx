@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Globe2, Plus, PanelRightClose } from 'lucide-react';
+import { Bell,PanelRightClose } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 import { ScholarshipCreateDialog } from "./ScholarshipCreateDialog";
 
 interface HeaderProps {
@@ -25,9 +23,9 @@ export default function Header({
   toggleSidebar, 
   role,
   title,
-  showCreateButton,
+  // showCreateButton,
   createButtonLink,
-  createButtonText,
+  // createButtonText,
   onRefreshDashboard
 }: HeaderProps) {
   const [currentTab, setCurrentTab] = useState(selectedTab);
@@ -69,7 +67,7 @@ interface CompanyHeaderProps {
   onRefreshDashboard?: () => Promise<boolean | void>;
 }
 
-const CompanyHeader = ({ createButtonLink = "/company/create-scholarship", onRefreshDashboard }: CompanyHeaderProps) => {
+const CompanyHeader = ({  onRefreshDashboard }: CompanyHeaderProps) => {
   return (
     <>
       <ScholarshipCreateDialog onSuccess={onRefreshDashboard} />

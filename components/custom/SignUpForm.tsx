@@ -88,8 +88,8 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
     },
   });
 
-  async function onSubmit(
-    values: StudentFormValues | CompanyFormValues
+  async function onSubmit<T extends StudentFormValues | CompanyFormValues>(
+    values: T
   ) {
     const result = await fetch("/api/createUser", {
       method: "POST",
@@ -154,7 +154,7 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
       {role === "Student" && (
         <Form {...studentForm}>
           <form
-            onSubmit={studentForm.handleSubmit(onSubmit as any)}
+            onSubmit={studentForm.handleSubmit(onSubmit)}
             className="text-left space-y-6"
           >
             <FormField
@@ -287,7 +287,7 @@ export default function SignUpForm({ role, walletAddress }: SignUpFormProps) {
       {role == "Company" && (
         <Form {...companyForm}>
           <form
-            onSubmit={companyForm.handleSubmit(onSubmit as any)}
+            onSubmit={companyForm.handleSubmit(onSubmit)}
             className="text-left space-y-6"
           >
             <FormField

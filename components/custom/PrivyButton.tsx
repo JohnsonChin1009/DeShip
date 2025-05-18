@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { ethers } from "ethers";
 import { roleNFT_CA, roleNFT_ABI } from "@/lib/contractABI";
@@ -90,7 +90,7 @@ export default function PrivyButton() {
   }, [ready, authenticated, user, setUser]);
 
   // Check user role and set localStorage immediately when authenticated
-  const checkUserRole = async () => {
+  const checkUserRole = useCallback(async () => {
     if (!authenticated || !user?.wallet?.address || isCheckingRole) return;
     
     // We have valid context user data and it matches current wallet - no need to check
@@ -163,23 +163,32 @@ export default function PrivyButton() {
     } finally {
       setIsCheckingRole(false);
     }
-  };
+  }, [
+    authenticated,
+    user,
+    isCheckingRole,
+    contextUser,
+    contract,
+    pathname,
+    refetchUserData,
+    router
+  ]);
 
   // Run role check whenever authentication or user changes
   useEffect(() => {
     // Only run check once Privy is ready and authenticated
     if (ready && authenticated && user?.wallet?.address) {
-      const shouldCheck = 
-        contextUser === null || 
+      const shouldCheck =
+        contextUser === null ||
         contextUser.wallet_address !== user.wallet.address;
-        
+
       if (shouldCheck) {
         checkUserRole();
       } else {
         checkAttempts.current = 0;
       }
     }
-  }, [authenticated, user, ready, contextUser]);
+  }, [authenticated, user, ready, contextUser, checkUserRole]);
 
   
   useEffect(() => {
