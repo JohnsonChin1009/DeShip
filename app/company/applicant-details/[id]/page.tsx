@@ -187,8 +187,8 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
   return (
     <div className="flex min-h-screen">
       <Sidebar
-        username={user?.username || ""}
-        profileImage={user?.avatar_url || ""}
+        username={user?.username || ''}
+        profileImage={user?.avatar_url || ''}
         role={role}
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
@@ -196,7 +196,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
         setSelectedTab={setSelectedTab}
       />
 
-      <div className={`flex-1 ${sidebarOpen ? "ml-6" : "ml-0"} transition-all`}>
+      <div className={`flex-1 ${sidebarOpen ? 'ml-6' : 'ml-0'} transition-all`}>
         <div className="min-h-screen p-6 bg-[#F0EBE3]">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Applicant Details</h1>
@@ -205,21 +205,22 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
           {/* Action Buttons */}
           <div className="p-6 pb-3 flex justify-between items-center">
             <Button variant="outline" size="sm" asChild>
-                {/* Have issue on cant route back to list page, due to need to create a page to render back to component file */}
-                <Link href="/company/dashboard">
+              {/* Have issue on cant route back to list page, due to need to create a page to render back to component file */}
+              <Link href="/company/dashboard">
                 <ArrowLeft className="w-4 h-4 mr-1" /> Back to Applicant lists
-                </Link>
+              </Link>
             </Button>
-            
+
             {!isApproved && (
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 className="bg-green-600 hover:bg-green-700"
                 onClick={handleApproveStudent}
                 disabled={approving}
               >
-                <Check className="w-4 h-4 mr-1" /> {approving ? "Approving..." : "Approve Student"}
+                <Check className="w-4 h-4 mr-1" />{' '}
+                {approving ? 'Approving...' : 'Approve Student'}
               </Button>
             )}
           </div>
@@ -237,27 +238,41 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
               {/* Scholarship Details Card */}
               <Card className="shadow-lg border border-gray-200 rounded-lg">
                 <CardHeader className="border-b border-gray-200 pb-4 bg-gray-50">
-                  <CardTitle className="text-xl font-semibold text-gray-700">Scholarship Information</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-700">
+                    Scholarship Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="flex flex-col space-y-3">
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Scholarship Title:</span>
-                      <p className="text-lg font-medium text-gray-800">{scholarshipTitle}</p>
+                      <span className="text-sm font-medium text-gray-500">
+                        Scholarship Title:
+                      </span>
+                      <p className="text-lg font-medium text-gray-800">
+                        {scholarshipTitle}
+                      </p>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Application Status:</span>
-                      <span className={`inline-block ml-2 px-3 py-1 text-sm font-medium rounded-full ${
-                        isApproved 
-                          ? "bg-green-100 text-green-800" 
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}>
-                        {isApproved ? "Approved" : "Pending Approval"}
+                      <span className="text-sm font-medium text-gray-500">
+                        Application Status:
+                      </span>
+                      <span
+                        className={`inline-block ml-2 px-3 py-1 text-sm font-medium rounded-full ${
+                          isApproved
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {isApproved ? 'Approved' : 'Pending Approval'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-sm font-medium text-gray-500">Funds Withdrawn:</span>
-                      <p className="text-lg font-medium text-gray-800">{fundsWithdrawn} ETH</p>
+                      <span className="text-sm font-medium text-gray-500">
+                        Funds Withdrawn:
+                      </span>
+                      <p className="text-lg font-medium text-gray-800">
+                        {fundsWithdrawn} ETH
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -270,13 +285,17 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                     <div className="flex items-center space-x-4">
                       <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
                         <Image
-                          src={avatarImages[parseInt(student.avatar_url) || 0]} 
-                          alt={student.username} 
+                          width={32}
+                          height={32}
+                          src={avatarImages[parseInt(student.avatar_url) || 0]}
+                          alt={student.username}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div>
-                        <CardTitle className="text-2xl font-bold text-gray-800">{student.username}</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-gray-800">
+                          {student.username}
+                        </CardTitle>
                         <CardDescription className="text-gray-600 mt-1">
                           Here is the applicant&apos;s detail
                         </CardDescription>
@@ -289,18 +308,32 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                     {/* Left Column */}
                     <div className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Field of Study</label>
-                        <p className="text-lg font-semibold text-gray-800">{student.field_of_study}</p>
+                        <label className="text-sm font-medium text-gray-500">
+                          Field of Study
+                        </label>
+                        <p className="text-lg font-semibold text-gray-800">
+                          {student.field_of_study}
+                        </p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Academic Progression</label>
-                        <p className="text-lg font-semibold text-gray-800">{student.academic_progression}</p>
+                        <label className="text-sm font-medium text-gray-500">
+                          Academic Progression
+                        </label>
+                        <p className="text-lg font-semibold text-gray-800">
+                          {student.academic_progression}
+                        </p>
                       </div>
                       {student.portfolio_url && (
                         <div>
-                          <label className="text-sm font-medium text-gray-500">Portfolio</label>
+                          <label className="text-sm font-medium text-gray-500">
+                            Portfolio
+                          </label>
                           <p className="text-lg font-semibold text-blue-600 hover:underline">
-                            <a href={student.portfolio_url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={student.portfolio_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               View Portfolio
                             </a>
                           </p>
@@ -311,8 +344,12 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
                     {/* Right Column */}
                     <div className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-500">Description</label>
-                        <p className="text-gray-700 leading-relaxed">{student.description}</p>
+                        <label className="text-sm font-medium text-gray-500">
+                          Description
+                        </label>
+                        <p className="text-gray-700 leading-relaxed">
+                          {student.description}
+                        </p>
                       </div>
                     </div>
                   </div>

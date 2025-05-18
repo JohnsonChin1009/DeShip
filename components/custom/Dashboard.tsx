@@ -669,6 +669,8 @@ const CompanyDashboard = () => {
                             <Avatar className="h-8 w-8">
                               {avatarImages.length > 0 ? (
                                 <Image
+                                  width={32}
+                                  height={32}
                                   src={avatarImages[avatarIndex]} 
                                   alt={username}
                                   className="w-full h-full object-cover" 
