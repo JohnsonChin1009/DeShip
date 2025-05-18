@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ethers } from 'ethers';
 import { scholarship_ABI } from '@/lib/contractABI';
 import Image from 'next/image';
+import Link from 'next/link';
 // import * as snarkjs from 'snarkjs';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -684,7 +685,11 @@ const CompanyDashboard = () => {
                               <p className="text-sm text-muted-foreground">{scholarshipTitle}</p>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">View</Button>
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/company/scholarship-details/${scholar.approvedScholarships?.[0]?.id || ''}`}>
+                              View
+                            </Link>
+                          </Button>
                         </div>
                         <Progress value={performanceValue} className="h-2" />
                         <div className="flex justify-between text-sm text-muted-foreground">
@@ -1013,7 +1018,7 @@ const StudentDashboard = () => {
                                                 <span>{percentComplete.toFixed(1)}%</span>
                                             </div>
                                             <Button
-                                              onClick={() => handleSubmitMilestone(scholarship.id,)}
+                                              onClick={() => handleSubmitMilestone(scholarship.id)}
                                               disabled={statusMapping[scholarship.status] === "Closed"}
                                               variant={"outline"}
                                             >
