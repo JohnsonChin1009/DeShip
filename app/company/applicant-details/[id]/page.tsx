@@ -1,18 +1,24 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Sidebar from "@/components/custom/sidebar";
-import { useUser } from "@/context/UserContext";
-import Link from "next/link";
-import { ArrowLeft, Check } from "lucide-react";
-import { ethers } from "ethers";
-import { scholarship_ABI } from "@/lib/contractABI";
-import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
-import Image from "next/image";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import Sidebar from '@/components/custom/sidebar';
+import { useUser } from '@/context/UserContext';
+import Link from 'next/link';
+import { ArrowLeft, Check } from 'lucide-react';
+import { ethers } from 'ethers';
+import { scholarship_ABI } from '@/lib/contractABI';
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
+import Image from 'next/image';
 
 interface StudentProfile {
   username: string;
@@ -24,47 +30,60 @@ interface StudentProfile {
   wallet_address: string;
 }
 
-export default function ApplicantDetailsPage({ params }: { params: { id: string } }) {
+export default function ApplicantDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("dashboard");
+  const [selectedTab, setSelectedTab] = useState('dashboard');
   const { user } = useUser();
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState<StudentProfile | null>(null);
-  const [fundsWithdrawn, setFundsWithdrawn] = useState<string>("0");
+  const [fundsWithdrawn, setFundsWithdrawn] = useState<string>('0');
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [scholarshipTitle, setScholarshipTitle] = useState<string>("");
+  const [scholarshipTitle, setScholarshipTitle] = useState<string>('');
   const [avatarImages, setAvatarImages] = useState<string[]>([]);
   const [approving, setApproving] = useState<boolean>(false);
+  const [studentAddress, setStudentAddress] = useState<string>('');
 
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const scholarshipAddress = searchParams.get("scholarship");
-  const studentAddress = params.id;
+  const scholarshipAddress = searchParams.get('scholarship');
+
+  // Resolve params Promise
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setStudentAddress(resolvedParams.id);
+    };
+
+    resolveParams();
+  }, [params]);
 
   // Fetch avatar images
   useEffect(() => {
     setAvatarImages([
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//1.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//2.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//3.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//4.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//5.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//6.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//7.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//8.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//9.png",
-      "https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//10.png",
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//1.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//2.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//3.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//4.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//5.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//6.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//7.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//8.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//9.png',
+      'https://mvmkybzjlmfhuaqrtlii.supabase.co/storage/v1/object/public/profile-images//10.png',
     ]);
   }, []);
 
   useEffect(() => {
-    const storedRole = localStorage.getItem("userRole");
+    const storedRole = localStorage.getItem('userRole');
     if (storedRole) {
       setRole(storedRole);
     }
   }, []);
-
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -80,19 +99,21 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
           },
           body: JSON.stringify({
             walletAddress: studentAddress,
-            role: 'Student'
+            role: 'Student',
           }),
         });
 
         const data = await response.json();
-        
+
         if (response.ok && data.status === 200) {
           setStudent(data.data);
         } else {
-          console.error("Error fetching student data:", data.error);
+          console.error('Error fetching student data:', data.error);
         }
 
-        const provider = new ethers.JsonRpcProvider("https://sepolia-rpc.scroll.io/");
+        const provider = new ethers.JsonRpcProvider(
+          'https://sepolia-rpc.scroll.io/'
+        );
         const scholarshipContract = new ethers.Contract(
           scholarshipAddress,
           scholarship_ABI,
@@ -104,13 +125,16 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
         setScholarshipTitle(title);
 
         // Get student application status and funds withdrawn
-        const studentApplication = await scholarshipContract.studentApplications(studentAddress);
+        const studentApplication =
+          await scholarshipContract.studentApplications(studentAddress);
         setIsApproved(studentApplication.isApproved);
-        setFundsWithdrawn(ethers.formatEther(studentApplication.fundsWithdrawn));
+        setFundsWithdrawn(
+          ethers.formatEther(studentApplication.fundsWithdrawn)
+        );
 
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
         setLoading(false);
       }
     };
@@ -121,7 +145,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
   // Function to approve student
   const handleApproveStudent = async () => {
     if (!studentAddress || !scholarshipAddress) return;
-    
+
     setApproving(true);
 
     try {
@@ -129,9 +153,9 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
       const walletAddress = localStorage.getItem('walletAddress');
       if (!walletAddress) {
         toast({
-          title: "Wallet not connected",
-          description: "Please connect your wallet first",
-          variant: "destructive"
+          title: 'Wallet not connected',
+          description: 'Please connect your wallet first',
+          variant: 'destructive',
         });
         setApproving(false);
         return;
@@ -141,7 +165,7 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
-        
+
         const scholarshipContract = new ethers.Contract(
           scholarshipAddress,
           scholarship_ABI,
@@ -149,35 +173,35 @@ export default function ApplicantDetailsPage({ params }: { params: { id: string 
         );
 
         toast({
-          title: "Processing",
-          description: "Approving student application...",
+          title: 'Processing',
+          description: 'Approving student application...',
         });
 
         // Call the approveStudent function
         const tx = await scholarshipContract.approveStudent(studentAddress);
-        
+
         await tx.wait();
-        
+
         setIsApproved(true);
         toast({
-          title: "Success!",
-          description: "Student has been approved successfully",
-          variant: "default",
-          className: "bg-green-500 text-white",
+          title: 'Success!',
+          description: 'Student has been approved successfully',
+          variant: 'default',
+          className: 'bg-green-500 text-white',
         });
       } else {
         toast({
-          title: "Wallet not detected",
-          description: "Please install MetaMask or another Ethereum wallet",
-          variant: "destructive"
+          title: 'Wallet not detected',
+          description: 'Please install MetaMask or another Ethereum wallet',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Error approving student:", error);
+      console.error('Error approving student:', error);
       toast({
-        title: "Approval Failed",
-        description: "Failed to approve student. Please try again.",
-        variant: "destructive"
+        title: 'Approval Failed',
+        description: 'Failed to approve student. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setApproving(false);

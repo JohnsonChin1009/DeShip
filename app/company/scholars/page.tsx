@@ -10,11 +10,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import Sidebar from '@/components/custom/Sidebar';
-import { Header } from "@/components/custom/Header";
+import Sidebar from '@/components/custom/sidebar';
+// import { Header } from "@/components/custom/Header";
 import { Eye, Search } from "lucide-react";
 import { ethers } from "ethers";
 import { scholarshipFactory_ABI, scholarshipFactory_CA, scholarship_ABI } from "@/lib/contractABI";
+import Header from "@/components/custom/header";
 
 const statusMapping = ["Open", "In Progress", "Closed", "Completed"];
 
@@ -125,8 +126,7 @@ export default function ScholarshipListingPage() {
         isOpen={sidebarOpen}
         setIsOpen={setSidebarOpen}
         selectedTab={selectedTab}
-        setSelectedTab={setSelectedTab}
-      />
+        setSelectedTab={setSelectedTab} username={""} profileImage={""}      />
 
       {/* Main Content */}
       <main
@@ -141,8 +141,7 @@ export default function ScholarshipListingPage() {
           createButtonLink="/company/create-scholarship"
           createButtonText="Create Scholarship"
           sidebarOpen={sidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
+          toggleSidebar={toggleSidebar} selectedTab={""} role={""}        />
 
         {/* Scholarship Table */}
         <div className="p-6">
